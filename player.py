@@ -1,4 +1,4 @@
-class Player:
+class Player(object):
     def __init__(self, player, learing):
         self.player = player
         self.color = 'Black' if player == 1 else 'White'
