@@ -36,24 +36,70 @@ class Game:
         return self.player1, self.player2
 
     def reinforcement_learning(self):
-        iter = 1
+        iter = 100
         max_seq = self.board.size ** 2
         for j in range(iter):
             self.board.reset()
-            start_state = self.board.fair_board()
+            action = self.board.fair_board()
             reward = 0
+            winner = None
+            loser = None
             states_seq = []
             action_probability_seq = []
             action_seq = []
-            for i in range(max_seq):
-                # even for player1, odd for player2
+            for i in range(max_seq - 1):
+                # even for player1 (black), odd for player2 (white)
                 if i & 1:
                     player = self.player2
+                    opponent = self.player1
                 else:
                     player = self.player1
+                    opponent = self.player2
 
-                state = self.board.get_current_state()
-                player_state = player.convert_state(state)
-                #action_prob = self.board.forward(player_state)
-                #action = np.argmax(np.random.multinomial(1, action_prob[:,0]))
-                #print action
+                # current state
+                state = self.board.set_next_state(action, symbol=player.player)
+                # opponent's action
+                player_state = opponent.convert_state(state)
+                action_prob = self.board.forward(player_state)
+                action = np.argmax(np.random.multinomial(1, action_prob[:]))
+                # TODO: this might be stark
+                while not self.board.is_legal_move(action):
+                    action = np.argmax(np.random.multinomial(1, action_prob[:]))
+                # TODO: exploring
+                states_seq.append(state)
+                action_probability_seq.append(action_prob)
+                action_seq.append(action)
+                if self.board.is_terminal(action, symbol=opponent.player):
+                    # opponent win
+                    reward = 1
+                    winner = opponent
+                    loser = player
+                    break
+                elif self.board.is_full():
+                    # tie game
+                    reward = 0.5
+                    winner = player
+                    loser = opponent
+                    break
+
+            if reward == 0:
+                continue
+            for idx in range(len(states_seq)):
+                # TODO: check this implement is correct
+                # current state
+                state = states_seq[idx]
+                winner_state = winner.convert_state(state)
+                loser_state = loser.convert_state(state)
+                # opponet's action
+                a_out = action_probability_seq[idx]
+                a_gold_idx = action_seq[idx]
+                a_gold = np.zeros(len(a_out))
+                # even for black and odd for white
+                # while this is opponent's action, must exchange turn
+                a_gold[a_gold_idx] = 1 if (idx & 1) else 2
+                if reward == 1:
+                    self.board.backward(1, winner_state, a_gold - a_out)
+                    self.board.backward(-1, loser_state, a_gold - a_out)
+                elif reward == 0.5:
+                    self.board.backward(0.5, winner_state, a_gold - a_out)
+                    self.board.backward(0.5, loser_state, a_gold - a_out)

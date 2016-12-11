@@ -11,5 +11,4 @@ class Agent(Player):
         if self.player == 1:
             return state
         else:
-            rep = {1:2, 2:1}
-            return [i if i==0 else rep[i] for i in state]
+            return np.where(state==0, 0, np.where(state==1, 2, 1))
