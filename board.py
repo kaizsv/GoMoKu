@@ -7,6 +7,7 @@ class Board:
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.W = None
+        self.w_file = 'rl_weight.npy'
         self.eta = 0.02
         self._init_weights(learning)
 
@@ -134,6 +135,18 @@ class Board:
             return True
 
         return False
+
+    def save_weights(self):
+        np.save(self.w_file, self.W)
+        np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
+
+    def load_weights(self):
+        try:
+            self.W = np.load(self.w_file)
+            return True
+        except IOError:
+            print '\nPlease choose 2 to learn weight\n'
+            return False
 
     def forward(self, state):
         a_in = np.dot(state, self.W)

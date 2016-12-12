@@ -1,8 +1,11 @@
 from game import Game
 
 def main():
-    game = Game()
-    player1, player2 = game.get_players()
+    mode = 1
+    while mode:
+        game = Game()
+        mode = game.condition
+        player1, player2 = game.get_players()
 
 
 if __name__ == "__main__":

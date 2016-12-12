@@ -1,4 +1,5 @@
 import numpy as np
+import timeit
 from player import Player
 from agent import Agent
 from board import Board
@@ -9,10 +10,11 @@ class Game:
         self.player2 = None
         self.symbol = {'Black':1, 'White':2}
         self.board = None
+        self.condition = 1
         self.game_condition()
 
     def game_condition(self):
-        condition = input('\nChoose game mode\n1) single player\n2) learning\n>')
+        condition = input('\nChoose game mode\n1) single player\n2) learning\n3) exit\n>')
         if condition == 1:
             self.board = Board(n = 15, learning = False)
             first = input('\nYou want to play\n1) black\n2) white\n>')
@@ -22,12 +24,16 @@ class Game:
             elif first == 2:
                 self.player1 = Agent(1, False)
                 self.player2 = Player(2, False)
+            # start game
+            self.play_game()
         elif condition == 2:
             self.board = Board(n = 15, learning = True)
             self.player1 = Agent(1, True)
             self.player2 = Agent(2, True)
             # start learning
             self.reinforcement_learning()
+        elif condition == 3:
+            self.condition = 0
         else:
             # wrong input, choose again
             return self.game_condition()
@@ -36,9 +42,10 @@ class Game:
         return self.player1, self.player2
 
     def reinforcement_learning(self):
-        iter = 100
+        iteration = 10
         max_seq = self.board.size ** 2
-        for j in range(iter):
+        start_time = timeit.default_timer()
+        for j in range(iteration):
             self.board.reset()
             action = self.board.fair_board()
             reward = 0
@@ -103,3 +110,15 @@ class Game:
                 elif reward == 0.5:
                     self.board.backward(0.5, winner_state, a_gold - a_out)
                     self.board.backward(0.5, loser_state, a_gold - a_out)
+        end_time = timeit.default_timer()
+        self.board.save_weights()
+        print "Finish learning %d games in %d seconds" % (iteration, end_time-start_time)
+
+    def play_game(self):
+        if not self.board.load_weights():
+            return
+        iteration = self.board.size ** 2
+        print self.board
+        # first move
+        x, y = self.player1.move()
+        pass
