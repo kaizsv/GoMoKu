@@ -4,6 +4,7 @@ class Board:
     def __init__(self, n, learning):
         self.size = n
         self.env = np.zeros((self.size, self.size), dtype=np.int)
+        self.board_limit = 2
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.W = None
@@ -15,16 +16,20 @@ class Board:
         # return a string that print current environment
         space = '    '
         alphabet = ''
+        s = u'\n\n'
         for i in range(self.size):
             alphabet += u'%c ' % (ord('a') + i)
-        s = space + alphabet + u'\n'
+        s += space + alphabet + u'\n'
         s += space + u'= ' * self.size + u'\n'
         for i in range(self.size):
             s += u' %2d' % (i + 1)
             s += u'|'
             for j in range(self.size):
                 s += '%c ' % self.symbol[self.env[i][j]]
-            s += u'|\n'
+            s += u'|'
+            if i == 1:
+                s += u'  -1: new game'
+            s += u'\n'
         s += space + u'= ' * self.size
         return s
 
@@ -51,19 +56,6 @@ class Board:
     def set_next_state(self, action, symbol):
         self.set_action(action, symbol)
         return self.env.reshape(self.size**2)
-
-    def fair_board(self):
-        # TODO: implement by W
-        # black can olny move outer lines of the board
-        # at the first move.
-        limit_line = 2
-        while True:
-            first_move = np.random.choice(self.legal_moves, 1)
-            if first_move < self.size * limit_line or \
-                first_move > self.size**2 - 1 - self.size * limit_line or \
-                first_move % self.size < limit_line or \
-                first_move % self.size > self.size - 1 - limit_line:
-                return first_move
 
     def is_full(self):
         return not self.legal_moves
