@@ -25,6 +25,7 @@ class Game:
                 self.player1 = Agent(1, False, self.board.size)
                 self.player2 = Player(2, False, self.board.size)
             # start game
+            self.board.set_player(self.player1, self.player2)
             self.play_game()
         elif condition == 2:
             self.board = Board(n = 15, learning = True)
@@ -69,8 +70,10 @@ class Game:
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
                 action_prob = self.board.forward(opponent_state)
+                # a faster version
+                # let illegal move's probability be 0
+                #action_prob = [action_prob[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
                 action = opponent.move(action_prob)
-                # TODO: this might be stark
                 while not self.board.is_legal_move(action):
                     action = opponent.move(action_prob)
                 # TODO: exploring
@@ -131,7 +134,10 @@ class Game:
         print(self.board)
         # black first move
         action = self.player1.fair_board_move(self.board)
-        for i in range(iteration):
+        if action < 0:
+            new_game()
+            return
+        for i in range(iteration - 1):
             if i & 1:
                 player = self.player2
                 opponent = self.player1

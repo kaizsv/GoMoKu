@@ -9,7 +9,7 @@ class Player(object):
         self.board_size = n
 
     def __str__(self):
-        return 'player' + self.player + ' is ' + self.color
+        return 'p' + str(self.player) + ' is ' + self.color
 
     def convert_state(self, state):
         # replace white player state with
@@ -24,41 +24,36 @@ class Player(object):
         col = [str(i) for i in range(1, 1 + self.board_size)]
         while True:
             move = raw_input('Your move > ')
+            if move == '-1':
+                return -1
             x = move[:-1] # except last char
             y = move[-1]  # last char
             if x in col and y in row:
                 x = int(x) - 1
                 y = ord(y) - ord('a')
                 return x * self.board_size + y
-            elif move == -1:
-                # TODO: -1
-                return -1
             print 'Illegal move'
 
     def fair_board_move(self, board):
-        # TODO: implement w in learning
         # black can only move outside the limit line
         # of the board at the first move.
         limit = board.board_limit
         size = board.size
         while True:
-            if self.is_learning:
-                # learning mode
-                action = np.random.choice(board.legal_moves, 1)
-            else:
-                # game mode
-                if self.__class__ == Player:
-                    # player move first
-                    action = self.move()
-                else:
-                    # TODO
-                    # agent move first
-                    action = 0
-
-            if action < size * limit or \
-                action > size**2 - 1 - size * limit or \
-                action % size < limit or \
-                action % size > size - 1 - limit:
+            # There is no learning mode in player
+            # game mode
+            action = self.move()
+            if action < 0:
                 return action
-            if not self.is_learning:
-                print 'fair board rule\nYou need to play outside the limit line ' + str(limit) + '\n'
+            if self.check_fair_board(action, size, limit):
+                return action
+            print 'fair board rule\nYou need to play outside the limit line ' + str(limit) + '\n'
+
+    def check_fair_board(self, action, size, limit):
+        if action < size * limit or \
+            action > size ** 2 - 1 - size * limit or \
+            action % size < limit or \
+            action % size > size - 1 - limit:
+            return True
+        else:
+            return False

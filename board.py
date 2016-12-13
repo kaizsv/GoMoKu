@@ -2,6 +2,8 @@ import numpy as np
 
 class Board:
     def __init__(self, n, learning):
+        self.player1 = None
+        self.player2 = None
         self.size = n
         self.env = np.zeros((self.size, self.size), dtype=np.int)
         self.board_limit = 2
@@ -11,6 +13,10 @@ class Board:
         self.w_file = 'rl_weight.npy'
         self.eta = 0.02
         self._init_weights(learning)
+
+    def set_player(self, p1, p2):
+        self.player1 = p1
+        self.player2 = p2
 
     def __str__(self):
         # return a string that print current environment
@@ -28,7 +34,14 @@ class Board:
                 s += '%c ' % self.symbol[self.env[i][j]]
             s += u'|'
             if i == 1:
-                s += u'  -1: new game'
+                s += space
+                s += self.player1.__str__()
+            elif i == 2:
+                s += space
+                s += self.player2.__str__()
+            elif i == 4:
+                s += space
+                s += u'-1: new game'
             s += u'\n'
         s += space + u'= ' * self.size
         return s
