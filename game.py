@@ -14,9 +14,10 @@ class Game:
         self.game_condition()
 
     def game_condition(self):
+        size = 3
         condition = input('\nChoose game mode\n1) single player\n2) learning\n3) exit\n>')
         if condition == 1:
-            self.board = Board(n = 15, learning = False)
+            self.board = Board(n = size, learning = False)
             first = input('\nYou want to play\n1) black\n2) white\n>')
             if first == 1:
                 self.player1 = Player(1, False, self.board.size)
@@ -28,7 +29,7 @@ class Game:
             self.board.set_player(self.player1, self.player2)
             self.play_game()
         elif condition == 2:
-            self.board = Board(n = 15, learning = True)
+            self.board = Board(n = size, learning = True)
             self.player1 = Agent(1, True, self.board.size)
             self.player2 = Agent(2, True, self.board.size)
             # start learning
@@ -43,7 +44,7 @@ class Game:
         return self.player1, self.player2
 
     def reinforcement_learning(self):
-        iteration = 10
+        iteration = 100
         max_seq = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(iteration):
@@ -138,6 +139,7 @@ class Game:
             new_game()
             return
         for i in range(iteration - 1):
+            # even for player1 (black), odd for player2 (white)
             if i & 1:
                 player = self.player2
                 opponent = self.player1
@@ -158,7 +160,7 @@ class Game:
                 action = opponent.move(action_prob)
             if action < 0:
                 new_game()
-                break
+                return
             if self.board.is_terminal(action, symbol=opponent.player):
                 # opponent win
                 state = self.board.set_next_state(action, symbol=opponent.player)
@@ -168,7 +170,8 @@ class Game:
                 else:
                     print '\nToo bad, player ' + str(player.player) + ' beats you!!!\n'
                 new_game()
-                break
+                return
             elif self.board.is_full():
                 print '\nTie game\n'
                 new_game()
+                return

@@ -6,7 +6,7 @@ class Board:
         self.player2 = None
         self.size = n
         self.env = np.zeros((self.size, self.size), dtype=np.int)
-        self.board_limit = 2
+        self.board_limit = 4
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.W = None
@@ -71,7 +71,9 @@ class Board:
         return self.env.reshape(self.size**2)
 
     def is_full(self):
-        return not self.legal_moves
+        # if there are only one action left in legal_moves
+        # then it must be fulled
+        return len(self.legal_moves) == 1
 
     def is_terminal(self, action, symbol):
         x, y = self._decode_action(action)

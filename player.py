@@ -9,7 +9,7 @@ class Player(object):
         self.board_size = n
 
     def __str__(self):
-        return 'p' + str(self.player) + ' is ' + self.color
+        return self.__class__.__name__ + ' is ' + self.color
 
     def convert_state(self, state):
         # replace white player state with
