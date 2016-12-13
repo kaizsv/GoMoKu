@@ -5,19 +5,21 @@ from agent import Agent
 from board import Board
 
 class Game:
-    def __init__(self):
+    def __init__(self, size, renju):
         self.player1 = None
         self.player2 = None
         self.symbol = {'Black':1, 'White':2}
+        self.size = size
+        self.renju = renju
         self.board = None
         self.condition = 1
+        self.rl_iter_games = 4000
         self.game_condition()
 
     def game_condition(self):
-        size = 3
         condition = input('\nChoose game mode\n1) single player\n2) learning\n3) exit\n>')
         if condition == 1:
-            self.board = Board(n = size, learning = False)
+            self.board = Board(n=self.size, r=self.renju, learning=False)
             first = input('\nYou want to play\n1) black\n2) white\n>')
             if first == 1:
                 self.player1 = Player(1, False, self.board.size)
@@ -29,7 +31,7 @@ class Game:
             self.board.set_player(self.player1, self.player2)
             self.play_game()
         elif condition == 2:
-            self.board = Board(n = size, learning = True)
+            self.board = Board(n=self.size, r=self.renju, learning=True)
             self.player1 = Agent(1, True, self.board.size)
             self.player2 = Agent(2, True, self.board.size)
             # start learning
@@ -44,10 +46,9 @@ class Game:
         return self.player1, self.player2
 
     def reinforcement_learning(self):
-        iteration = 100
         max_seq = self.board.size ** 2
         start_time = timeit.default_timer()
-        for j in range(iteration):
+        for j in range(self.rl_iter_games):
             self.board.reset()
             # black first move
             action = self.player1.fair_board_move(self.board)
@@ -116,8 +117,8 @@ class Game:
                     self.board.backward(0.5, winner_state, a_gold - a_out)
                     self.board.backward(0.5, loser_state, a_gold - a_out)
         end_time = timeit.default_timer()
-        self.board.save_weights()
-        print "Finish learning %d games in %d seconds" % (iteration, end_time-start_time)
+        self.board.save_weights(self.rl_iter_games)
+        print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
 
     def play_game(self):
 
@@ -129,16 +130,16 @@ class Game:
                 self.condition = 0
 
         # start to play game
-        if not self.board.load_weights():
+        if not self.board.load_weights(self.rl_iter_games):
             return
-        iteration = self.board.size ** 2
+        max_seq = self.board.size ** 2
         print(self.board)
         # black first move
         action = self.player1.fair_board_move(self.board)
         if action < 0:
             new_game()
             return
-        for i in range(iteration - 1):
+        for i in range(max_seq - 1):
             # even for player1 (black), odd for player2 (white)
             if i & 1:
                 player = self.player2
@@ -155,7 +156,7 @@ class Game:
             action_prob = self.board.forward(opponent_state)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
-                if isinstance(opponent, Player):
+                if type(opponent) is Player:
                     print 'Illegal move'
                 action = opponent.move(action_prob)
             if action < 0:
@@ -165,7 +166,7 @@ class Game:
                 # opponent win
                 state = self.board.set_next_state(action, symbol=opponent.player)
                 print(self.board)
-                if isinstance(opponent, Player):
+                if type(opponent) is Player:
                     print '\nGood job, You win!!!\n'
                 else:
                     print '\nToo bad, player ' + str(player.player) + ' beats you!!!\n'

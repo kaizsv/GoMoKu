@@ -1,18 +1,20 @@
 import numpy as np
 
 class Board:
-    def __init__(self, n, learning):
+    def __init__(self, n, r, learning):
         self.player1 = None
         self.player2 = None
         self.size = n
         self.env = np.zeros((self.size, self.size), dtype=np.int)
         self.board_limit = 4
+        self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.W = None
         self.w_file = 'rl_weight.npy'
         self.eta = 0.02
-        self._init_weights(learning)
+        if learning:
+            self.W = np.random.rand(self.size**2, self.size**2) / (2 * self.size**2)
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -50,11 +52,6 @@ class Board:
         self.env = np.zeros((self.size, self.size), dtype=np.int)
         self.legal_moves = [i for i in range(self.size ** 2)]
 
-    def _init_weights(self, learning):
-        # TODO: if not learning, load weight
-        if learning:
-            self.W = np.random.rand(self.size**2, self.size**2) / (2 * self.size**2)
-
     def is_legal_move(self, action):
         return (action in self.legal_moves)
 
@@ -83,73 +80,75 @@ class Board:
 
         count = 1
         # check horizontal
-        for i in range(1, 5):
+        for i in range(1, self.renju):
             if check_boundary(x, y+i) and self.env[x][y+i] == symbol:
                 count += 1
             else:
                break
-        for j in range(1, 5):
+        for j in range(1, self.renju):
             if check_boundary(x, y-j) and self.env[x][y-j] == symbol:
                 count += 1
             else:
                 break
-        if count >= 5:
+        if count >= self.renju:
             return True
 
         count = 1
         # check vertical
-        for i in range(1, 5):
+        for i in range(1, self.renju):
             if check_boundary(x+i, y) and self.env[x+i][y] == symbol:
                 count += 1
             else:
                 break
-        for j in range(1, 5):
+        for j in range(1, self.renju):
             if check_boundary(x-j, y) and self.env[x-j][y] == symbol:
                 count += 1
             else:
                 break
-        if count >= 5:
+        if count >= self.renju:
             return True
 
         count = 1
         # check splash
-        for i in range(1, 5):
+        for i in range(1, self.renju):
             if check_boundary(x-i, y-i) and self.env[x-i][y-i] == symbol:
                 count += 1
             else:
                break
-        for j in range(1, 5):
+        for j in range(1, self.renju):
             if check_boundary(x+j, y+j) and self.env[x+j][y+j] == symbol:
                 count += 1
             else:
                 break
-        if count >= 5:
+        if count >= self.renju:
             return True
 
         count = 1
         # check back splash
-        for i in range(1, 5):
+        for i in range(1, self.renju):
             if check_boundary(x-i, y+i) and self.env[x-i][y+i] == symbol:
                 count += 1
             else:
                 break
-        for j in range(1, 5):
+        for j in range(1, self.renju):
             if check_boundary(x+j, y-j) and self.env[x+j][y-j] == symbol:
                 count += 1
             else:
                 break
-        if count >= 5:
+        if count >= self.renju:
             return True
 
         return False
 
-    def save_weights(self):
-        np.save(self.w_file, self.W)
+    def save_weights(self, n_games):
+        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
+        np.save(path, self.W)
         np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
 
-    def load_weights(self):
+    def load_weights(self, n_games):
+        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
         try:
-            self.W = np.load(self.w_file)
+            self.W = np.load(path)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
