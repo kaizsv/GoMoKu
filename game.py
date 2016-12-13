@@ -13,7 +13,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 4000
+        self.rl_iter_games = 10000
         self.game_condition()
 
     def game_condition(self):
@@ -71,12 +71,13 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                action_prob = self.board.forward(opponent_state)
                 # a faster version
                 # let illegal move's probability be 0
-                #action_prob = [action_prob[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
+                opponent_state = [opponent_state[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
+                action_prob = self.board.forward(opponent_state)
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
+                    #print self.board.legal_move
                     action = opponent.move(action_prob)
                 # TODO: exploring
                 states_seq.append(state)
@@ -153,6 +154,9 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
+            # a faster version
+            # let illegal move's probability be 0
+            opponent_state = [opponent_state[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
             action_prob = self.board.forward(opponent_state)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
