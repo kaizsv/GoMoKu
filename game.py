@@ -13,7 +13,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 10000
+        self.rl_iter_games = 15000
         self.game_condition()
 
     def game_condition(self):
@@ -49,6 +49,7 @@ class Game:
         max_seq = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(self.rl_iter_games):
+            print j
             self.board.reset()
             # black first move
             action = self.player1.fair_board_move(self.board)
@@ -71,15 +72,15 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                # a faster version
-                # let illegal move's probability be 0
-                opponent_state = [opponent_state[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
                 action_prob = self.board.forward(opponent_state)
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
                     #print self.board.legal_move
                     action = opponent.move(action_prob)
                 # TODO: exploring
+                state = np.copy(state)
+                action_prob = np.copy(action_prob)
+                action = np.copy(action)
                 states_seq.append(state)
                 action_probability_seq.append(action_prob)
                 action_seq.append(action)
@@ -110,7 +111,7 @@ class Game:
                 a_gold = np.zeros(len(a_out))
                 # even for black and odd for white
                 # while this is opponent's action, must exchange turn
-                a_gold[a_gold_idx] = 1 if (idx & 1) else 2
+                a_gold[a_gold_idx] = 1
                 if reward == 1:
                     self.board.backward(1, winner_state, a_gold - a_out)
                     self.board.backward(-1, loser_state, a_gold - a_out)
@@ -154,9 +155,6 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
-            # a faster version
-            # let illegal move's probability be 0
-            opponent_state = [opponent_state[i] if self.board.is_legal_move(i) else 0 for i in range(max_seq)]
             action_prob = self.board.forward(opponent_state)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
