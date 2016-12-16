@@ -58,6 +58,9 @@ class Board:
     def _decode_action(self, action):
         return int(action / self.size), (action % self.size)
 
+    def get_state(self):
+        return tuple(self.W.reshape(self.size ** 2))
+
     def set_action(self, action, symbol):
         pos_x, pos_y = self._decode_action(action)
         self.env[pos_x][pos_y] = symbol
