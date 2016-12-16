@@ -16,6 +16,7 @@ class Player(object):
         # [0, 0, 1, 2, ...] => [0, 0, 2, 1, ...]
         if self.player == 1:
             return state
+            #return np.where(state==0, 0, np.where(state==1, 1, -1))
         else:
             return np.where(state==0, 0, np.where(state==1, 2, 1))
 

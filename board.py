@@ -161,5 +161,8 @@ class Board:
 
     def backward(self, reward, state, characteristic):
         state = state.reshape(len(state), 1)
+        print 'ba state ', state
         characteristic = characteristic.reshape(len(characteristic), 1)
+        print 'ba chara ', characteristic
+        print 'ba W ', self.eta*reward*np.dot(state, characteristic.T)
         self.W += self.eta * reward * np.dot(state, characteristic.T)
