@@ -19,6 +19,10 @@ class Player(object):
         else:
             return np.where(state==0, 0, np.where(state==1, 2, 1))
 
+    def c_state(self, state):
+        if self.player == 1:
+            return np.where(state==0, 0, np.where(state==1, 1, -1))
+
     def move(self, action_prob = None):
         row = [chr(i) for i in range(ord('a'), ord('a') + self.board_size)]
         col = [str(i) for i in range(1, 1 + self.board_size)]
