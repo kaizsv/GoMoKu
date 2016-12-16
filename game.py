@@ -72,7 +72,7 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                action_prob = self.board.forward(opponent_state)
+                action_prob = self.board.forward(opponent_state, opponent.player)
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
                     #print self.board.legal_move
@@ -155,7 +155,7 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
-            action_prob = self.board.forward(opponent_state)
+            action_prob = self.board.forward(opponent_state, opponent.player)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:

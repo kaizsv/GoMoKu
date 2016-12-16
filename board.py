@@ -154,8 +154,10 @@ class Board:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
-    def forward(self, state):
+    def forward(self, state, symbol):
         a_in = np.dot(state, self.W)
+        if symbol == 2:
+            a_in = np.negative(a_in)
         a_out = (np.exp(a_in) / np.sum(np.exp(a_in)))
         return a_out
 
