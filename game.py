@@ -74,13 +74,9 @@ class Game:
                 print 'state ', state
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-<<<<<<< HEAD
                 print 'opp_state ', opponent_state
-                action_prob = self.board.forward(opponent_state)
-                print 'action_prob ', action_prob
-=======
                 action_prob = self.board.forward(opponent_state, opponent.player)
->>>>>>> 5caa26362738399ed0e9c697f19c99e721587089
+                print 'action_prob ', action_prob
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
                     #print self.board.legal_move
