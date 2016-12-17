@@ -80,16 +80,21 @@ class Game:
                 # current state
                 state = self.board.set_next_state(action, symbol=player.player)
                 #print 'state ', state
-                # opponent's action
                 action_prob = self.board.forward(state)
                 #print 'action_prob ', action_prob
+                '''legal_moves = list(self.board.legal_moves)
+                legal_moves_prob = []
+                for k in range(len(action_prob)):
+                    if k in legal_moves:
+                        legal_moves_prob.append(action_prob[k])
+                '''
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
                     #print self.board.legal_move
                     action = opponent.move(action_prob)
+                    #action = legal_moves[legal]
                 #print 'action ', action
                 # TODO: exploring
-                #state = np.copy(state)
                 action_prob = np.copy(action_prob)
                 action = np.copy(action)
                 states_seq.append(state)
@@ -153,7 +158,9 @@ class Game:
         max_seq = self.board.size ** 2
         print(self.board)
         # black first move
-        action = self.player1.fair_board_move(self.board)
+        state = self.board.get_state()
+        action_prob = self.board.forward(state)
+        action = self.player1.fair_board_move(self.board, action_prob)
         if action < 0:
             new_game()
             return

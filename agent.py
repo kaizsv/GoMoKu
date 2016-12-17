@@ -20,13 +20,13 @@ class Agent(Player):
                 return action
 
     def get_reward(self, winner):
-        if self.player == 1:
-            if winner == 1:
+        if winner == 1:
+            if self.player == 1:
                 return 1
             else:
                 return -1
         else:
-            if winner == 2:
-                return 1
-            else:
+            if self.player == 1:
                 return -1
+            else:
+                return 1
