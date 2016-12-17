@@ -1,20 +1,20 @@
 import numpy as np
+import sys
 
 class Board:
     def __init__(self, n, r, learning):
         self.player1 = None
         self.player2 = None
         self.size = n
-        self.env = np.zeros((self.size, self.size), dtype=np.int)
+        self.env = np.zeros((self.size, self.size), dtype=np.int8)
         self.board_limit = 4
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.W = None
+        self.W = dict()
         self.w_file = 'rl_weight.npy'
         self.eta = 0.02
-        if learning:
-            self.W = np.random.rand(self.size**2, self.size**2) / (2 * self.size**2)
+        self.learning = learning
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -49,7 +49,7 @@ class Board:
         return s
 
     def reset(self):
-        self.env = np.zeros((self.size, self.size), dtype=np.int)
+        self.env = np.zeros((self.size, self.size), dtype=np.int8)
         self.legal_moves = [i for i in range(self.size ** 2)]
 
     def is_legal_move(self, action):
@@ -59,7 +59,7 @@ class Board:
         return int(action / self.size), (action % self.size)
 
     def get_state(self):
-        return tuple(self.W.reshape(self.size ** 2))
+        return tuple(self.env.reshape(self.size ** 2))
 
     def set_action(self, action, symbol):
         pos_x, pos_y = self._decode_action(action)
@@ -68,7 +68,7 @@ class Board:
 
     def set_next_state(self, action, symbol):
         self.set_action(action, symbol)
-        return self.env.reshape(self.size**2)
+        return self.get_state()
 
     def is_full(self):
         # if there are only one action left in legal_moves
@@ -146,28 +146,30 @@ class Board:
     def save_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
         np.save(path, self.W)
-        np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
+        with open('for_test.txt', 'w') as f:
+            for key, value in self.W.items():
+                f.write('%s: %s\n' % (key, value))
 
     def load_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
         try:
-            self.W = np.load(path)
+            self.W = np.load(path).item()
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
-    def forward(self, state, symbol):
-        a_in = np.dot(state, self.W)
-        if symbol == 2:
-            a_in = np.negative(a_in)
-        a_out = (np.exp(a_in) / np.sum(np.exp(a_in)))
+    def forward(self, state):
+        if state not in self.W:
+            if not self.learning:
+                sys.exit()
+            self.W[state] = np.random.rand(self.size ** 2) / (2*self.size**2)
+        a_in = self.W[state]
+        a_out = (np.exp(a_in)) / np.sum(np.exp(a_in))
         return a_out
 
     def backward(self, reward, state, characteristic):
-        state = state.reshape(len(state), 1)
-        characteristic = characteristic.reshape(len(characteristic), 1)
-        print 'b state ', state
-        print 'b charac ', characteristic
-        print 'b ', self.eta * reward * np.dot(state, characteristic.T)
-        self.W += self.eta * reward * np.dot(state, characteristic.T)
+        #print 'b state ', state
+        #print 'b charac ', characteristic
+        #print 'b ', self.eta * reward * characteristic
+        self.W[state] += self.eta * reward * characteristic

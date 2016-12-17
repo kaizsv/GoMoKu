@@ -18,3 +18,15 @@ class Agent(Player):
             action = np.random.choice(board.legal_moves, 1)
             if self.check_fair_board(action, size, limit):
                 return action
+
+    def get_reward(self, winner):
+        if self.player == 1:
+            if winner == 1:
+                return 1
+            else:
+                return -1
+        else:
+            if winner == 2:
+                return 1
+            else:
+                return -1
