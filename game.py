@@ -13,7 +13,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 18000
+        self.rl_iter_games = 20000
         self.game_condition()
 
     def game_condition(self):
@@ -54,7 +54,7 @@ class Game:
             state = self.board.get_state()
             action_prob = self.board.forward(state)
             # black first move
-            action = self.player1.fair_board_move(self.board)
+            action = self.player1.fair_board_move(self.board, action_prob)
             #print 'first action ' + str(action)
             reward = 0
             winner = None
@@ -62,6 +62,7 @@ class Game:
             states_seq = []
             action_probability_seq = []
             action_seq = []
+            # append first state to sequence
             action_prob = np.copy(action_prob)
             action = np.copy(action)
             states_seq.append(state)
@@ -103,15 +104,15 @@ class Game:
                     break
                 elif self.board.is_full():
                     # tie game
-                    reward = 0.5
+                    reward = 0
                     winner = player
                     loser = opponent
                     break
 
-            if reward == 0 or reward == 0.5:
+            if reward == 0:
                 continue
             for idx in range(len(states_seq)):
-                if not idx & 1:
+                if idx & 1:
                     player = self.player2
                     opponent = self.player1
                 else:
@@ -127,7 +128,7 @@ class Game:
                 a_gold_idx = action_seq[idx]
                 a_gold = np.zeros(len(a_out))
                 a_gold[a_gold_idx] = 1
-                reward = opponent.get_reward(winner.player)
+                reward = player.get_reward(winner.player)
                 #print 'a_gold ', a_gold
                 self.board.backward(reward, state, a_gold - a_out)
                 #elif reward == 0.5:

@@ -14,7 +14,7 @@ class Board:
         self.W = dict()
         self.w_file = 'rl_weight.npy'
         self.eta = 0.02
-        self.learning = learning
+        self.is_learning = learning
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -161,7 +161,7 @@ class Board:
 
     def forward(self, state):
         if state not in self.W:
-            if not self.learning:
+            if not self.is_learning:
                 sys.exit()
             self.W[state] = np.random.rand(self.size ** 2) / (2*self.size**2)
         a_in = self.W[state]

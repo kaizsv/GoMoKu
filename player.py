@@ -38,7 +38,7 @@ class Player(object):
                 return x * self.board_size + y
             print 'Illegal move'
 
-    def fair_board_move(self, board):
+    def fair_board_move(self, board, action_prob=None):
         # black can only move outside the limit line
         # of the board at the first move.
         limit = board.board_limit
