@@ -8,12 +8,12 @@ class Game:
     def __init__(self, size, renju):
         self.player1 = None
         self.player2 = None
-        self.symbol = {'Black':1, 'White':2}
         self.size = size
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 1
+        self.rl_iter_games = 2
+        self.d = True
         self.game_condition()
 
     def game_condition(self):
@@ -53,7 +53,8 @@ class Game:
             self.board.reset()
             # black first move
             action = self.player1.fair_board_move(self.board)
-            print 'first ', action
+            if self.d:
+                print 'first ', action
             reward = 0
             winner = None
             loser = None
@@ -71,17 +72,17 @@ class Game:
 
                 # current state
                 state = self.board.set_next_state(action, symbol=player.player)
-                print 'state ', state
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                print 'opp_state ', opponent_state
-                action_prob = self.board.forward(opponent_state, opponent.player)
-                print 'action_prob ', action_prob
+                action_prob = self.board.forward(opponent_state, opponent.player, self.board.legal_moves)
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
-                    #print self.board.legal_move
                     action = opponent.move(action_prob)
-                print 'action ', action
+                if self.d:
+                    print 'state ', state
+                    print 'opp_state ', opponent_state
+                    print 'action_prob ', action_prob
+                    print 'action ', action
                 # TODO: exploring
                 state = np.copy(state)
                 action_prob = np.copy(action_prob)
@@ -91,14 +92,15 @@ class Game:
                 action_seq.append(action)
                 if self.board.is_terminal(action, symbol=opponent.player):
                     # opponent win
+                    if self.d:
+                        print 'winner ', opponent.player
                     reward = 1
                     winner = opponent
                     loser = player
-                    print 'winner ', winner.player
                     break
                 elif self.board.is_full():
                     # tie game
-                    reward = 0.5
+                    reward = 0
                     winner = player
                     loser = opponent
                     break
@@ -107,34 +109,28 @@ class Game:
                 continue
             for idx in range(len(states_seq)):
                 if idx & 1:
-                    # white turn
-                    reward = reward * -1
+                    player = self.player2
+                    opponent = self.player1
                 else:
-                    # black turn
-                    reward = reward
+                    player = self.player1
+                    opponent = self.player2
                 # TODO: check this implement is correct
                 # current state
                 state = states_seq[idx]
-                print 'b state ', state
-                winner_state = winner.convert_state(state)
-                print ' winner ', winner_state
-                loser_state = loser.convert_state(state)
-                print ' loser ', loser_state
                 # opponent's action
+                state = opponent.convert_state(state)
                 a_out = action_probability_seq[idx]
-                print 'b a_out ', a_out
                 a_gold_idx = action_seq[idx]
                 a_gold = np.zeros(len(a_out))
-                # even for black and odd for white
-                # while this is opponent's action, must exchange turn
                 a_gold[a_gold_idx] = 1
-                if reward == 1 or reward == -1:
-                    self.board.backward(reward, winner_state, a_gold - a_out)
-                    self.board.backward(reward*-1, loser_state, a_gold - a_out)
-                else:
+                reward = opponent.get_reward(winner.player)
+                if self.d:
+                    print 'b state ', state
+                    print 'b a_out ', a_out
+                self.board.backward(reward, state, a_gold - a_out, self.d)
+                #else:
                     #self.board.backward(0.5, winner_state, a_gold - a_out)
                     #self.board.backward(0.5, loser_state, a_gold - a_out)
-                    pass
         end_time = timeit.default_timer()
         self.board.save_weights(self.rl_iter_games)
         print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
@@ -172,7 +168,7 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
-            action_prob = self.board.forward(opponent_state, opponent.player)
+            action_prob = self.board.forward(opponent_state, opponent.player, self.board.legal_moves)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:

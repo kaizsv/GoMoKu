@@ -14,11 +14,16 @@ class Player(object):
     def convert_state(self, state):
         # replace white player state with
         # [0, 0, 1, 2, ...] => [0, 0, 2, 1, ...]
-        if self.player == 1:
+        '''if self.player == 1:
             return state
             #return np.where(state==0, 0, np.where(state==1, 1, -1))
         else:
             return np.where(state==0, 0, np.where(state==1, 2, 1))
+        '''
+        return np.where(state==2, 1, state)
+
+    def convert_backward_state(self, state):
+        return np.where(state==2, -1, state)
 
     def move(self, action_prob = None):
         row = [chr(i) for i in range(ord('a'), ord('a') + self.board_size)]
