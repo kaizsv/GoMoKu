@@ -146,9 +146,11 @@ class Board:
     def save_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
         np.save(path, self.W)
-        with open('for_test.txt', 'w') as f:
-            for key, value in self.W.items():
-                f.write('%s: %s\n' % (key, value))
+        # ignore test file while board size is 15
+        if self.size == 3:
+            with open('for_test.txt', 'w') as f:
+                for key, value in self.W.items():
+                    f.write('%s: %s\n' % (key, value))
 
     def load_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
