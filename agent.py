@@ -6,7 +6,10 @@ class Agent(Player):
         super(Agent, self).__init__(player, learning, n)
 
     def move(self, action_prob):
-        return np.argmax(np.random.multinomial(1, action_prob[:]))
+        if self.is_learning:
+            return np.argmax(np.random.multinomial(1, action_prob[:]))
+        else:
+            return np.argmax(action_prob)
 
     def fair_board_move(self, board, action_prob):
         # black can only move outside the limit line

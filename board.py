@@ -159,17 +159,22 @@ class Board:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
-    def forward(self, state):
+    def forward(self, state, legal_moves):
         if state not in self.W:
             if not self.is_learning:
+                print '\nno state in policy network\n'
                 sys.exit()
             self.W[state] = np.random.rand(self.size ** 2) / (2*self.size**2)
         a_in = self.W[state]
-        a_out = (np.exp(a_in)) / np.sum(np.exp(a_in))
+        a_in = np.exp(a_in)
+        for i in range(len(a_in)):
+            a_in[i] = 0 if i not in legal_moves else a_in[i]
+        a_out = (a_in) / np.sum(a_in)
         return a_out
 
-    def backward(self, reward, state, characteristic):
-        #print 'b state ', state
-        #print 'b charac ', characteristic
-        #print 'b ', self.eta * reward * characteristic
+    def backward(self, reward, state, characteristic, d):
+        if d:
+            print 'b state ', state
+            print 'b charac ', characteristic
+            print 'b ', self.eta * reward * characteristic
         self.W[state] += self.eta * reward * characteristic
