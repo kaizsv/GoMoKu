@@ -21,22 +21,35 @@ class NeuralNetwork(object):
             self.hidden_layers.append(w.copy())
         self.output_layer = np.ones((output_size, layer_size[-1]))
 
-    def set_input(self, X):
-        self.input = X
+    def set_input(self, x):
+        self.input = x
 
     def get_output(self):
-        return self.output
+        return self.output.copy()
 
-    def forward(self, inputs):
+    def update(self):
         for i in range(num_hidden_layer):
             w = self.hidden_layers[i]
             inputs = np.dot(w, inputs)
             # TODO: nonlinearlize
-        output = np.dot(self.output_layer, inputs)
-        return output
+        self.output = np.dot(self.output_layer, inputs)
 
-    def backward(self):
-        pass
+    def forward(self, inputs):
+        self.set_input(inputs)
+        self.update()
+
+    def backward(self, action_gold):
+        self.set_input(action_gold)
+        self.update()
+        
+        # TODO: (1.0 - out) * out
+        # calculate output characteristic
+        out = self.get_output()
+        out_error = np.subtract(action_gold, out)
+
+        for i in reversed(range(num_hidden_layer)):
+            pass
+            
 
 nn = NeuralNetwork()
 #print nn.forward(np.array([1,1,1,1,1,1,1,1,1]))
