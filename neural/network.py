@@ -8,7 +8,7 @@ num_hidden_layer = len(layer_size) - 1
 
 class NeuralNetwork(object):
     def __init__(self):
-        # input and output
+        # input
         self.input = None
         # weights of layers
         self.hidden_layers = list()
@@ -31,23 +31,24 @@ class NeuralNetwork(object):
         for i in range(num_hidden_layer):
             self.hidden_layers[i].update(x)
             x = self.hidden_layers[i].get_output()
-            # TODO: nonlinearlize
         self.output_layer.update(x)
 
     def forward(self, inputs):
         self.set_input(inputs)
         self.update()
-        return self.get_output()
+        return self.get_oddutput()
 
     def backward(self, action_gold):
         self.set_input(action_gold)
         self.update()
 
-        # TODO: (1.0 - out) * out
-        # calculate output characteristic
+        # calculate output error
         out = self.get_output()
-        out_error = np.subtract(action_gold, out)
+        characteristic = np.subtract(action_gold, out)
+        out_error = map(lambda x, y, z: x * y * z, characteristic, 1.0-out, out)
+        out_error = np.array(out_error)
 
+        # hidden layers error
         hidden_errors = list()
         higher_error = out_error
         for i in reversed(range(num_hidden_layer)):
@@ -57,5 +58,15 @@ class NeuralNetwork(object):
             higher_error = error
         hidden_errors.reverse()
 
-nn = NeuralNetwork()
-print nn.forward(np.array([1,1,1,1,1,1,1,1,1]))
+        # modify hidden layers weights
+        for i in range(num_hidden_layer):
+            hidden_layer = self.hidden_layers[i]
+            w = hidden_layer.get_weight()
+            delta = np.dot(hidden_errors[i].T, hidden_layer.get_non_linear_der_out())
+            hidden_layer.modify_weight(delta)
+
+        # modify output layer weight
+        w = self.output_layer.get_weight()
+        delta = np.dot(out_error.T, self.output_layer.get_non_linear_der_out())
+        self.output_layer.modify_weight(delta)
+
