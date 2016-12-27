@@ -1,3 +1,4 @@
+from layer import NeuralLayer
 import numpy as np
 
 input_size = 9
@@ -9,47 +10,52 @@ class NeuralNetwork(object):
     def __init__(self):
         # input and output
         self.input = None
-        self.output = None
         # weights of layers
         self.hidden_layers = list()
-        self.output_layer = list()
-        self._init_network()
-
-    def _init_network(self):
         for i in range(num_hidden_layer):
-            w = np.ones((layer_size[i+1], layer_size[i]))
-            self.hidden_layers.append(w.copy())
-        self.output_layer = np.ones((output_size, layer_size[-1]))
+            layer = NeuralLayer(layer_size[i+1], layer_size[i])
+            self.hidden_layers.append(layer)
+        self.output_layer = NeuralLayer(output_size, layer_size[-1])
 
     def set_input(self, x):
         self.input = x
 
+    def get_input(self):
+        return self.input.copy()
+
     def get_output(self):
-        return self.output.copy()
+        return self.output_layer.get_output()
 
     def update(self):
+        x = self.input
         for i in range(num_hidden_layer):
-            w = self.hidden_layers[i]
-            inputs = np.dot(w, inputs)
+            self.hidden_layers[i].update(x)
+            x = self.hidden_layers[i].get_output()
             # TODO: nonlinearlize
-        self.output = np.dot(self.output_layer, inputs)
+        self.output_layer.update(x)
 
     def forward(self, inputs):
         self.set_input(inputs)
         self.update()
+        return self.get_output()
 
     def backward(self, action_gold):
         self.set_input(action_gold)
         self.update()
-        
+
         # TODO: (1.0 - out) * out
         # calculate output characteristic
         out = self.get_output()
         out_error = np.subtract(action_gold, out)
 
+        hidden_errors = list()
+        higher_error = out_error
         for i in reversed(range(num_hidden_layer)):
-            pass
-            
+            w = self.hidden_layers[i].get_weight()
+            error = np.dot(w, higher_error)
+            hidden_errors.append(error.copy())
+            higher_error = error
+        hidden_errors.reverse()
 
 nn = NeuralNetwork()
-#print nn.forward(np.array([1,1,1,1,1,1,1,1,1]))
+print nn.forward(np.array([1,1,1,1,1,1,1,1,1]))
