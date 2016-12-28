@@ -13,7 +13,7 @@ class Game:
         self.board = None
         self.condition = 1
         self.rl_iter_games = 2
-        self.d = True
+        self.d = False
         self.game_condition()
 
     def game_condition(self):
@@ -74,7 +74,7 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                action_prob = self.board.forward(opponent_state, opponent.player, self.board.legal_moves)
+                action_prob = self.board.forward(opponent_state, opponent.player)
                 action = opponent.move(action_prob)
                 while not self.board.is_legal_move(action):
                     action = opponent.move(action_prob)
@@ -127,7 +127,7 @@ class Game:
                 if self.d:
                     print 'b state ', state
                     print 'b a_out ', a_out
-                self.board.backward(reward, state, a_gold - a_out, self.d)
+                self.board.backward(reward, state, a_gold, self.d)
                 #else:
                     #self.board.backward(0.5, winner_state, a_gold - a_out)
                     #self.board.backward(0.5, loser_state, a_gold - a_out)
@@ -168,7 +168,7 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
-            action_prob = self.board.forward(opponent_state, opponent.player, self.board.legal_moves)
+            action_prob = self.board.forward(opponent_state, opponent.player)
             action = opponent.move(action_prob)
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:

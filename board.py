@@ -1,4 +1,8 @@
 import numpy as np
+import pickle
+from neural.network import NeuralNetwork
+
+f_name = '.obj'
 
 class Board:
     def __init__(self, n, r, learning):
@@ -10,11 +14,8 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.W = None
-        self.w_file = 'rl_weight.npy'
+        self.nn = NeuralNetwork()
         self.eta = 0.02
-        if learning:
-            self.W = np.random.rand(self.size**2, self.size**2) / (2 * self.size**2)
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -141,20 +142,27 @@ class Board:
         return False
 
     def save_weights(self, n_games):
-        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
-        np.save(path, self.W)
-        np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
+        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + f_name + self.nn.__str__()
+        f = open(path, 'w')
+        pickle.dump(self.nn, f)
+        #np.save(path, self.W)
+        #np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
 
     def load_weights(self, n_games):
-        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
+        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + f_name + self.nn.__str__()
         try:
-            self.W = np.load(path)
+            f = open(path, 'r')
+            self.nn = pickle.load(f)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
-    def forward(self, state, symbol, legal_moves):
+    def forward(self, state, symbol):
+        self.nn.set_input(state)
+        self.nn.update()
+        return self.nn.get_output()
+        '''
         a_in = np.dot(state, self.W)
         #print 'a_in ', a_in
         if symbol == 2:
@@ -168,8 +176,13 @@ class Board:
         a_out = (a_in) / np.sum(a_in)
         #print 'a_out ', a_out
         return a_out
+        '''
 
-    def backward(self, reward, state, characteristic, d):
+    def backward(self, reward, state, action_gold, d):
+        self.nn.set_input(state)
+        self.nn.update()
+        self.nn.backpropagation(action_gold)
+        '''
         state = state.reshape(len(state), 1)
         characteristic = characteristic.reshape(len(characteristic), 1)
         if d:
@@ -177,3 +190,4 @@ class Board:
             print 'ba chara ', characteristic
             print 'ba W ', self.eta*reward*np.dot(state, characteristic.T)
         self.W += self.eta * reward * np.dot(state, characteristic.T)
+        '''
