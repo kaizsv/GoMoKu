@@ -5,7 +5,7 @@ class NeuralLayer(object):
     def __init__(self, size, in_size):
         self.size = size
         self.in_size = in_size
-        self.w = np.ones((size, in_size))
+        self.w = np.random.rand(size) / size
         self.output = None
 
     def modify_weight(self, delta):

@@ -17,6 +17,10 @@ class NeuralNetwork(object):
             self.hidden_layers.append(layer)
         self.output_layer = NeuralLayer(output_size, layer_size[-1])
 
+    def __str__(self):
+        s_layer = '_'.join(layer_size + list(output_size))
+        return 'nn' + '_' + s_layer
+
     def set_input(self, x):
         self.input = x
 
@@ -33,15 +37,7 @@ class NeuralNetwork(object):
             x = self.hidden_layers[i].get_output()
         self.output_layer.update(x)
 
-    def forward(self, inputs):
-        self.set_input(inputs)
-        self.update()
-        return self.get_oddutput()
-
-    def backward(self, action_gold):
-        self.set_input(action_gold)
-        self.update()
-
+    def backpropagation(self, action_gold):
         # calculate output error
         out = self.get_output()
         characteristic = np.subtract(action_gold, out)
