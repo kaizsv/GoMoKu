@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 2
+        self.rl_iter_games = 100
         self.d = False
         self.game_condition()
 
@@ -127,12 +127,12 @@ class Game:
                 if self.d:
                     print 'b state ', state
                     print 'b a_out ', a_out
-                self.board.backward(reward, state, a_gold, self.d)
+                #self.board.backward(reward, state, a_gold, self.d)
                 #else:
                     #self.board.backward(0.5, winner_state, a_gold - a_out)
                     #self.board.backward(0.5, loser_state, a_gold - a_out)
         end_time = timeit.default_timer()
-        self.board.save_weights(self.rl_iter_games)
+        self.board.save_nn(self.rl_iter_games)
         print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
 
     def play_game(self):
@@ -145,7 +145,7 @@ class Game:
                 self.condition = 0
 
         # start to play game
-        if not self.board.load_weights(self.rl_iter_games):
+        if not self.board.load_nn(self.rl_iter_games):
             return
         max_seq = self.board.size ** 2
         print(self.board)

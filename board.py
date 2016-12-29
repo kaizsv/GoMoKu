@@ -141,15 +141,15 @@ class Board:
 
         return False
 
-    def save_weights(self, n_games):
-        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + f_name + self.nn.__str__()
+    def save_nn(self, n_games):
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
         f = open(path, 'w')
         pickle.dump(self.nn, f)
         #np.save(path, self.W)
         #np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
 
-    def load_weights(self, n_games):
-        path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + f_name + self.nn.__str__()
+    def load_nn(self, n_games):
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
         try:
             f = open(path, 'r')
             self.nn = pickle.load(f)
@@ -161,7 +161,12 @@ class Board:
     def forward(self, state, symbol):
         self.nn.set_input(state)
         self.nn.update()
-        return self.nn.get_output()
+        out = self.nn.get_output()
+        print 'out out ', out
+        out = np.exp(out)
+        for i in range(len(out)):
+            out[i] = 0 if i not in self.legal_moves else out[i]
+        return out / np.sum(out)
         '''
         a_in = np.dot(state, self.W)
         #print 'a_in ', a_in

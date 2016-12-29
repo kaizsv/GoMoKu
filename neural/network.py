@@ -1,9 +1,9 @@
 from layer import NeuralLayer
 import numpy as np
 
-input_size = 9
-output_size = 9
-layer_size = [input_size, 50]
+input_size = 4
+output_size = 4
+layer_size = [input_size, 4]
 num_hidden_layer = len(layer_size) - 1
 
 class NeuralNetwork(object):
@@ -18,8 +18,8 @@ class NeuralNetwork(object):
         self.output_layer = NeuralLayer(output_size, layer_size[-1])
 
     def __str__(self):
-        s_layer = '_'.join(layer_size + list(output_size))
-        return 'nn' + '_' + s_layer
+        s_layer = '_'.join(map(str, layer_size)) + '_' + str(output_size)
+        return 'nn_' + s_layer
 
     def set_input(self, x):
         self.input = x
@@ -66,3 +66,7 @@ class NeuralNetwork(object):
         delta = np.dot(out_error.T, self.output_layer.get_non_linear_der_out())
         self.output_layer.modify_weight(delta)
 
+nn = NeuralNetwork()
+nn.set_input([1,0,0,0])
+nn.update()
+print nn.get_output()

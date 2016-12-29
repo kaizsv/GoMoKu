@@ -20,7 +20,7 @@ class Player(object):
         else:
             return np.where(state==0, 0, np.where(state==1, 2, 1))
         '''
-        return np.where(state==2, 1, state)
+        return np.where(state==2, -1, state)
 
     def convert_backward_state(self, state):
         return np.where(state==2, -1, state)
