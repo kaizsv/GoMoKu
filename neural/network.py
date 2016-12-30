@@ -57,16 +57,21 @@ class NeuralNetwork(object):
         # modify hidden layers weights
         for i in range(num_hidden_layer):
             hidden_layer = self.hidden_layers[i]
-            w = hidden_layer.get_weight()
-            delta = np.dot(hidden_errors[i].T, hidden_layer.get_non_linear_der_out())
+            hidden_error_T = hidden_errors[i].reshape(len(hidden_errors[i]), 1)
+            hidden_error_out = hidden_layer.get_non_linear_der_out()
+            hidden_error_out = hidden_error_out.reshape(len(hidden_error_out), 1)
+            delta = np.dot(hidden_error_T, hidden_error_out.T)
             hidden_layer.modify_weight(delta)
 
         # modify output layer weight
-        w = self.output_layer.get_weight()
-        delta = np.dot(out_error.T, self.output_layer.get_non_linear_der_out())
+        out_error = out_error.reshape(len(out_error), 1)
+        out_error_out = self.output_layer.get_non_linear_der_out()
+        out_error_out = out_error_out.reshape(len(out_error_out), 1)
+        delta = np.dot(out_error, out_error_out.T)
         self.output_layer.modify_weight(delta)
 
 nn = NeuralNetwork()
 nn.set_input([1,0,0,0])
 nn.update()
-print nn.get_output()
+action_prob = nn.get_output()
+nn.backpropagation([0,1,0,0])
