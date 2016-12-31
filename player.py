@@ -14,13 +14,10 @@ class Player(object):
     def convert_state(self, state):
         # replace white player state with
         # [0, 0, 1, 2, ...] => [0, 0, 2, 1, ...]
-        '''if self.player == 1:
-            return state
-            #return np.where(state==0, 0, np.where(state==1, 1, -1))
+        if self.player == 1:
+            return np.where(state==0, 0, np.where(state==1, 1, -1))
         else:
-            return np.where(state==0, 0, np.where(state==1, 2, 1))
-        '''
-        return np.where(state==2, -1, state)
+            return np.where(state==0, 0, np.where(state==1, -1, 1))
 
     def convert_backward_state(self, state):
         return np.where(state==2, -1, state)

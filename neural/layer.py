@@ -9,6 +9,7 @@ class NeuralLayer(object):
         self.output = None
 
     def modify_weight(self, delta):
+        delta = delta.reshape(len(delta), 1)
         self.w += delta
 
     def get_weight(self):
@@ -19,9 +20,10 @@ class NeuralLayer(object):
 
     def update(self, x):
         self.output = np.dot(self.w, x)
+        self._set_non_linear_out()
 
-    def get_non_linear_out(self):
-        return np.tanh(self.output)
+    def _set_non_linear_out(self):
+        self.output = np.tanh(self.output)
 
-    def get_non_linear_der_out(self):
+    def get_non_linear_derivative_out(self):
         return (1.0 - np.square(np.tanh(self.output)))

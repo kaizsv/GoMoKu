@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 100
+        self.rl_iter_games = 50000
         self.d = False
         self.game_condition()
 
@@ -51,16 +51,16 @@ class Game:
         for j in range(self.rl_iter_games):
             print j
             self.board.reset()
-            # black first move
-            action = self.player1.fair_board_move(self.board)
-            if self.d:
-                print 'first ', action
             reward = 0
             winner = None
             loser = None
             states_seq = []
             action_probability_seq = []
             action_seq = []
+            # black first move
+            action = self.player1.fair_board_move(self.board)
+            if self.d:
+                print 'first ', action
             for i in range(max_seq - 1):
                 # even for player1 (black), odd for player2 (white)
                 if i & 1:
@@ -83,10 +83,6 @@ class Game:
                     print 'opp_state ', opponent_state
                     print 'action_prob ', action_prob
                     print 'action ', action
-                # TODO: exploring
-                state = np.copy(state)
-                action_prob = np.copy(action_prob)
-                action = np.copy(action)
                 states_seq.append(state)
                 action_probability_seq.append(action_prob)
                 action_seq.append(action)
@@ -114,7 +110,6 @@ class Game:
                 else:
                     player = self.player1
                     opponent = self.player2
-                # TODO: check this implement is correct
                 # current state
                 state = states_seq[idx]
                 # opponent's action
@@ -127,10 +122,7 @@ class Game:
                 if self.d:
                     print 'b state ', state
                     print 'b a_out ', a_out
-                #self.board.backward(reward, state, a_gold, self.d)
-                #else:
-                    #self.board.backward(0.5, winner_state, a_gold - a_out)
-                    #self.board.backward(0.5, loser_state, a_gold - a_out)
+                self.board.backward(reward, state, a_gold)
         end_time = timeit.default_timer()
         self.board.save_nn(self.rl_iter_games)
         print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)

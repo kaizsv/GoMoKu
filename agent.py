@@ -7,7 +7,7 @@ class Agent(Player):
 
     def move(self, action_prob):
         if self.is_learning:
-            return np.argmax(np.random.multinomial(1, action_prob[:]))
+            return np.argmax(np.random.multinomial(1, action_prob[:])).copy()
         else:
             if self.player == 1:
                 return np.argmax(action_prob)

@@ -1,24 +1,23 @@
 from layer import NeuralLayer
 import numpy as np
 
-input_size = 4
-output_size = 4
-layer_size = [input_size, 4]
-num_hidden_layer = len(layer_size) - 1
-
 class NeuralNetwork(object):
-    def __init__(self):
+    def __init__(self, size):
+        self.input_size = size ** 2
+        self.output_size = size ** 2
+        self.layer_size = [self.input_size, 80, 80]
+        self.num_hidden_layer = len(self.layer_size) - 1
         # input
         self.input = None
         # weights of layers
         self.hidden_layers = list()
-        for i in range(num_hidden_layer):
-            layer = NeuralLayer(layer_size[i+1], layer_size[i])
+        for i in range(self.num_hidden_layer):
+            layer = NeuralLayer(self.layer_size[i+1], self.layer_size[i])
             self.hidden_layers.append(layer)
-        self.output_layer = NeuralLayer(output_size, layer_size[-1])
+        self.output_layer = NeuralLayer(self.output_size, self.layer_size[-1])
 
     def __str__(self):
-        s_layer = '_'.join(map(str, layer_size)) + '_' + str(output_size)
+        s_layer = '_'.join(map(str, self.layer_size)) + '_' + str(self.output_size)
         return 'nn_' + s_layer
 
     def set_input(self, x):
@@ -31,8 +30,8 @@ class NeuralNetwork(object):
         return self.output_layer.get_output()
 
     def update(self):
-        x = self.input
-        for i in range(num_hidden_layer):
+        x = self.get_input()
+        for i in range(self.num_hidden_layer):
             self.hidden_layers[i].update(x)
             x = self.hidden_layers[i].get_output()
         self.output_layer.update(x)
@@ -41,37 +40,36 @@ class NeuralNetwork(object):
         # calculate output error
         out = self.get_output()
         characteristic = np.subtract(action_gold, out)
-        out_error = map(lambda x, y, z: x * y * z, characteristic, 1.0-out, out)
-        out_error = np.array(out_error)
+        out_error = characteristic * (1.0 - out) * out
 
         # hidden layers error
         hidden_errors = list()
-        higher_error = out_error
-        for i in reversed(range(num_hidden_layer)):
-            w = self.hidden_layers[i].get_weight()
-            error = np.dot(w, higher_error)
+        pre_layer = self.output_layer
+        pre_error = out_error
+        for i in reversed(range(self.num_hidden_layer)):
+            w = pre_layer.get_weight()
+            error = np.dot(pre_error, w)
             hidden_errors.append(error.copy())
-            higher_error = error
+            pre_layer = self.hidden_layers[i]
+            pre_error = error.copy()
         hidden_errors.reverse()
 
         # modify hidden layers weights
-        for i in range(num_hidden_layer):
+        for i in range(self.num_hidden_layer):
             hidden_layer = self.hidden_layers[i]
-            hidden_error_T = hidden_errors[i].reshape(len(hidden_errors[i]), 1)
-            hidden_error_out = hidden_layer.get_non_linear_der_out()
-            hidden_error_out = hidden_error_out.reshape(len(hidden_error_out), 1)
-            delta = np.dot(hidden_error_T, hidden_error_out.T)
+            hidden_error_out = hidden_layer.get_non_linear_derivative_out()
+            delta = hidden_errors[i] * hidden_error_out
             hidden_layer.modify_weight(delta)
 
         # modify output layer weight
-        out_error = out_error.reshape(len(out_error), 1)
-        out_error_out = self.output_layer.get_non_linear_der_out()
-        out_error_out = out_error_out.reshape(len(out_error_out), 1)
-        delta = np.dot(out_error, out_error_out.T)
+        out_error_out = self.output_layer.get_non_linear_derivative_out()
+        delta = out_error * out_error_out
         self.output_layer.modify_weight(delta)
 
+'''
 nn = NeuralNetwork()
-nn.set_input([1,0,0,0])
+nn.set_input(np.array([1,0,0,0]))
 nn.update()
 action_prob = nn.get_output()
-nn.backpropagation([0,1,0,0])
+nn.backpropagation(np.array([0,1,0,0]))
+'''

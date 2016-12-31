@@ -14,7 +14,7 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.nn = NeuralNetwork()
+        self.nn = NeuralNetwork(self.size)
         self.eta = 0.02
 
     def set_player(self, p1, p2):
@@ -66,7 +66,7 @@ class Board:
 
     def set_next_state(self, action, symbol):
         self.set_action(action, symbol)
-        return self.env.reshape(self.size**2)
+        return self.env.reshape(self.size**2).copy()
 
     def is_full(self):
         # if there are only one action left in legal_moves
@@ -145,8 +145,6 @@ class Board:
         path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
         f = open(path, 'w')
         pickle.dump(self.nn, f)
-        #np.save(path, self.W)
-        #np.savetxt('for_test.txt', self.W, delimiter=" ",fmt="%f")
 
     def load_nn(self, n_games):
         path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
@@ -162,11 +160,10 @@ class Board:
         self.nn.set_input(state)
         self.nn.update()
         out = self.nn.get_output()
-        print 'out out ', out
         out = np.exp(out)
         for i in range(len(out)):
             out[i] = 0 if i not in self.legal_moves else out[i]
-        return out / np.sum(out)
+        return (out / np.sum(out)).copy()
         '''
         a_in = np.dot(state, self.W)
         #print 'a_in ', a_in
@@ -183,7 +180,7 @@ class Board:
         return a_out
         '''
 
-    def backward(self, reward, state, action_gold, d):
+    def backward(self, reward, state, action_gold):
         self.nn.set_input(state)
         self.nn.update()
         self.nn.backpropagation(action_gold)
