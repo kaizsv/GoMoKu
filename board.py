@@ -15,7 +15,6 @@ class Board:
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.nn = NeuralNetwork(self.size)
-        self.eta = 0.02
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -183,7 +182,7 @@ class Board:
     def backward(self, reward, state, action_gold):
         self.nn.set_input(state)
         self.nn.update()
-        self.nn.backpropagation(action_gold)
+        self.nn.backpropagation(reward, action_gold)
         '''
         state = state.reshape(len(state), 1)
         characteristic = characteristic.reshape(len(characteristic), 1)

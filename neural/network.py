@@ -3,10 +3,13 @@ import numpy as np
 
 class NeuralNetwork(object):
     def __init__(self, size):
+        # layer parameters
         self.input_size = size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 80, 80]
+        self.layer_size = [self.input_size, 9, 9, 9, 9, 9]
         self.num_hidden_layer = len(self.layer_size) - 1
+        # learning rate
+        self.eta = 1
         # input
         self.input = None
         # weights of layers
@@ -36,11 +39,11 @@ class NeuralNetwork(object):
             x = self.hidden_layers[i].get_output()
         self.output_layer.update(x)
 
-    def backpropagation(self, action_gold):
+    def backpropagation(self, reward, action_gold):
         # calculate output error
         out = self.get_output()
         characteristic = np.subtract(action_gold, out)
-        out_error = characteristic * (1.0 - out) * out
+        out_error = reward * characteristic * (1.0 - out) * out
 
         # hidden layers error
         hidden_errors = list()
@@ -57,19 +60,22 @@ class NeuralNetwork(object):
         # modify hidden layers weights
         for i in range(self.num_hidden_layer):
             hidden_layer = self.hidden_layers[i]
-            hidden_error_out = hidden_layer.get_non_linear_derivative_out()
-            delta = hidden_errors[i] * hidden_error_out
+            hidden_error_out = hidden_layer.get_d_non_linear_out()
+            delta = self.eta * hidden_errors[i] * hidden_error_out
             hidden_layer.modify_weight(delta)
 
         # modify output layer weight
-        out_error_out = self.output_layer.get_non_linear_derivative_out()
-        delta = out_error * out_error_out
+        out_error_out = self.output_layer.get_d_non_linear_out()
+        delta = self.eta * out_error * out_error_out
         self.output_layer.modify_weight(delta)
 
 '''
-nn = NeuralNetwork()
-nn.set_input(np.array([1,0,0,0]))
-nn.update()
-action_prob = nn.get_output()
-nn.backpropagation(np.array([0,1,0,0]))
+nn = NeuralNetwork(2)
+for i in range(1000):
+    nn.set_input(np.array([1,0,0,0]))
+    nn.update()
+    print i, ' ', nn.get_output()
+
+    nn.backpropagation(np.array([0,0,0,1]))
+
 '''

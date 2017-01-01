@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 50000
+        self.rl_iter_games = 100000
         self.d = False
         self.game_condition()
 
@@ -97,8 +97,6 @@ class Game:
                 elif self.board.is_full():
                     # tie game
                     reward = 0
-                    winner = player
-                    loser = opponent
                     break
 
             if reward == 0:

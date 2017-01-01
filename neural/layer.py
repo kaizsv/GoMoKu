@@ -25,5 +25,5 @@ class NeuralLayer(object):
     def _set_non_linear_out(self):
         self.output = np.tanh(self.output)
 
-    def get_non_linear_derivative_out(self):
-        return (1.0 - np.square(np.tanh(self.output)))
+    def get_d_non_linear_out(self):
+        return (1.0 - np.square(self.output))
