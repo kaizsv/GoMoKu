@@ -142,14 +142,14 @@ class Board:
 
     def save_nn(self, n_games):
         path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
-        f = open(path, 'w')
-        pickle.dump(self.nn, f)
+        with open(path, 'wb') as save:
+            pickle.dump(self.nn, save)
 
     def load_nn(self, n_games):
         path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
         try:
-            f = open(path, 'r')
-            self.nn = pickle.load(f)
+            with open(path, 'rb') as load:
+                self.nn = pickle.load(load)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
