@@ -165,32 +165,8 @@ class Board:
         for i in range(len(out)):
             out[i] = 0 if i not in self.legal_moves else out[i]
         return (out / np.sum(out)).copy()
-        '''
-        a_in = np.dot(state, self.W)
-        #print 'a_in ', a_in
-        if symbol == 2:
-            a_in = np.negative(a_in)
-            #print 'neg a_in ', a_in
-        a_in = np.exp(a_in)
-        #print 'exp a_in ', a_in
-        for i in range(len(a_in)):
-            a_in[i] = 0 if i not in legal_moves else a_in[i]
-        #print 'zero a_in ', a_in
-        a_out = (a_in) / np.sum(a_in)
-        #print 'a_out ', a_out
-        return a_out
-        '''
 
     def backward(self, reward, state, action_gold):
         self.nn.set_input(state)
         self.nn.update()
         self.nn.backpropagation(reward, action_gold)
-        '''
-        state = state.reshape(len(state), 1)
-        characteristic = characteristic.reshape(len(characteristic), 1)
-        if d:
-            print 'ba state ', state
-            print 'ba chara ', characteristic
-            print 'ba W ', self.eta*reward*np.dot(state, characteristic.T)
-        self.W += self.eta * reward * np.dot(state, characteristic.T)
-        '''

@@ -15,8 +15,6 @@ def main():
     while mode:
         game = Game(s, r)
         mode = game.condition
-        player1, player2 = game.get_players()
-
 
 if __name__ == "__main__":
     main()

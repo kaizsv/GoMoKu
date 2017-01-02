@@ -12,8 +12,8 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 100000
-        self.d = False
+        self.rl_iter_games = 2
+        self.d = True
         self.game_condition()
 
     def game_condition(self):
@@ -42,9 +42,6 @@ class Game:
             # wrong input, choose again
             return self.game_condition()
 
-    def get_players(self):
-        return self.player1, self.player2
-
     def reinforcement_learning(self):
         max_seq = self.board.size ** 2
         start_time = timeit.default_timer()
@@ -55,7 +52,6 @@ class Game:
             winner = None
             loser = None
             states_seq = []
-            action_probability_seq = []
             action_seq = []
             # black first move
             action = self.player1.fair_board_move(self.board)
@@ -84,7 +80,6 @@ class Game:
                     print 'action_prob ', action_prob
                     print 'action ', action
                 states_seq.append(state)
-                action_probability_seq.append(action_prob)
                 action_seq.append(action)
                 if self.board.is_terminal(action, symbol=opponent.player):
                     # opponent win
@@ -112,14 +107,12 @@ class Game:
                 state = states_seq[idx]
                 # opponent's action
                 state = opponent.convert_state(state)
-                a_out = action_probability_seq[idx]
                 a_gold_idx = action_seq[idx]
-                a_gold = np.zeros(len(a_out))
+                a_gold = np.zeros(max_seq)
                 a_gold[a_gold_idx] = 1
                 reward = opponent.get_reward(winner.player)
                 if self.d:
                     print 'b state ', state
-                    print 'b a_out ', a_out
                 self.board.backward(reward, state, a_gold)
         end_time = timeit.default_timer()
         self.board.save_nn(self.rl_iter_games)

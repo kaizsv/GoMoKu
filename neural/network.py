@@ -6,7 +6,7 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 9, 9, 9, 9, 9]
+        self.layer_size = [self.input_size, 9, 9, 9, 9]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 1
@@ -43,15 +43,17 @@ class NeuralNetwork(object):
         # calculate output error
         out = self.get_output()
         characteristic = np.subtract(action_gold, out)
-        out_error = reward * characteristic * (1.0 - out) * out
+        out_error = reward * characteristic * self.output_layer.get_d_non_linear_out()
 
         # hidden layers error
         hidden_errors = list()
         pre_layer = self.output_layer
         pre_error = out_error
         for i in reversed(range(self.num_hidden_layer)):
+            h_layer_out = self.hidden_layers[i].get_d_non_linear_out()
             w = pre_layer.get_weight()
             error = np.dot(pre_error, w)
+            error = error * h_layer_out
             hidden_errors.append(error.copy())
             pre_layer = self.hidden_layers[i]
             pre_error = error.copy()
@@ -60,22 +62,11 @@ class NeuralNetwork(object):
         # modify hidden layers weights
         for i in range(self.num_hidden_layer):
             hidden_layer = self.hidden_layers[i]
-            hidden_error_out = hidden_layer.get_d_non_linear_out()
-            delta = self.eta * hidden_errors[i] * hidden_error_out
+            hidden_input = hidden_layer.get_input()
+            delta = self.eta * np.outer(hidden_errors[i], hidden_input)
             hidden_layer.modify_weight(delta)
 
         # modify output layer weight
-        out_error_out = self.output_layer.get_d_non_linear_out()
-        delta = self.eta * out_error * out_error_out
+        out_input = self.output_layer.get_input()
+        delta = self.eta * np.outer(out_error, out_input)
         self.output_layer.modify_weight(delta)
-
-'''
-nn = NeuralNetwork(2)
-for i in range(1000):
-    nn.set_input(np.array([1,0,0,0]))
-    nn.update()
-    print i, ' ', nn.get_output()
-
-    nn.backpropagation(np.array([0,0,0,1]))
-
-'''
