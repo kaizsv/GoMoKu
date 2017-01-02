@@ -159,6 +159,8 @@ class Board:
         self.nn.set_input(state)
         self.nn.update()
         out = self.nn.get_output()
+        if symbol == 2:
+            out = np.negative(out)
         out = np.exp(out)
         for i in range(len(out)):
             out[i] = 0 if i not in self.legal_moves else out[i]

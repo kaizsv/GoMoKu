@@ -9,12 +9,15 @@ class Agent(Player):
         if self.is_learning:
             return np.argmax(np.random.multinomial(1, action_prob[:])).copy()
         else:
+            return np.argmax(action_prob)
+            '''
             if self.player == 1:
                 return np.argmax(action_prob)
             else:
                 for i in range(len(action_prob)):
                     action_prob[i] = np.inf if action_prob[i] == 0 else action_prob[i]
                 return np.argmin(action_prob)
+            '''
 
     def fair_board_move(self, board):
         # TODO: implement fair board weights
