@@ -14,7 +14,7 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.nn = NeuralNetwork(self.size)
+        self.nn = NeuralNetwork(self.size, phase=3)
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -155,16 +155,10 @@ class Board:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
-    def forward(self, state, symbol):
+    def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
-        out = self.nn.get_output()
-        if symbol == 2:
-            out = np.negative(out)
-        out = np.exp(out)
-        for i in range(len(out)):
-            out[i] = 0 if i not in self.legal_moves else out[i]
-        return (out / np.sum(out)).copy()
+        return self.nn.get_output()
 
     def backward(self, reward, state, action_gold):
         self.nn.set_input(state)

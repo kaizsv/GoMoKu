@@ -12,17 +12,15 @@ class Player(object):
         return self.__class__.__name__ + ' is ' + self.color
 
     def convert_state(self, state):
-        # replace white player state with
-        # [0, 0, 1, 2, ...] => [0, 0, 2, 1, ...]
-        if self.player == 1:
-            return np.where(state==0, 0, np.where(state==1, 1, -1))
-        else:
-            return np.where(state==0, 0, np.where(state==1, -1, 1))
+        # TODO: this might be wrong
+        opp_player = 2 if self.player == 1 else 1
+        d_phase = { 0:2, self.player:0, opp_player:1 }
+        c_state = np.zeros((3, self.board_size ** 2), dtype=np.int)
+        for idx, s in enumerate(state):
+            c_state[d_phase[s]][idx] = 1
+        return c_state.reshape(3 * self.board_size ** 2)
 
-    def convert_backward_state(self, state):
-        return np.where(state==2, -1, state)
-
-    def move(self, action_prob = None):
+    def move(self, action_prob = None, legal_moves = None):
         row = [chr(i) for i in range(ord('a'), ord('a') + self.board_size)]
         col = [str(i) for i in range(1, 1 + self.board_size)]
         while True:

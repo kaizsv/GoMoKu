@@ -2,11 +2,11 @@ from layer import NeuralLayer
 import numpy as np
 
 class NeuralNetwork(object):
-    def __init__(self, size):
+    def __init__(self, size, phase=3):
         # layer parameters
-        self.input_size = size ** 2
+        self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 9, 9, 9, 9]
+        self.layer_size = [self.input_size, 27, 27, 27, 27]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 1

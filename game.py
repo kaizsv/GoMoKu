@@ -12,8 +12,8 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 2
-        self.d = True
+        self.rl_iter_games = 100000
+        self.d = False
         self.game_condition()
 
     def game_condition(self):
@@ -46,7 +46,8 @@ class Game:
         max_seq = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(self.rl_iter_games):
-            print j
+            if j % 1000 == 0:
+                print j
             self.board.reset()
             reward = 0
             winner = None
@@ -70,10 +71,10 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                action_prob = self.board.forward(opponent_state, opponent.player)
-                action = opponent.move(action_prob)
+                action_prob = self.board.forward(opponent_state)
+                action = opponent.move(action_prob, self.board.legal_moves)
                 while not self.board.is_legal_move(action):
-                    action = opponent.move(action_prob)
+                    action = opponent.move(action_prob, self.board.legal_moves)
                 if self.d:
                     print 'state ', state
                     print 'opp_state ', opponent_state
@@ -116,7 +117,7 @@ class Game:
                 self.board.backward(reward, state, a_gold)
         end_time = timeit.default_timer()
         self.board.save_nn(self.rl_iter_games)
-        print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
+        print "Finish learning %d games in %d minutes" % (self.rl_iter_games, (end_time-start_time)/60)
 
     def play_game(self):
 
@@ -151,8 +152,8 @@ class Game:
             print(self.board)
             # opponent's action
             opponent_state = opponent.convert_state(state)
-            action_prob = self.board.forward(opponent_state, opponent.player)
-            action = opponent.move(action_prob)
+            action_prob = self.board.forward(opponent_state)
+            action = opponent.move(action_prob, self.board.legal_moves)
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:
                     print 'Illegal move'
