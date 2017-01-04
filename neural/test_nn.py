@@ -29,9 +29,7 @@ for i in range(1000):
     nn.update()
     nn.backpropagation(1, np.array([0,1,0]))
 
-    '''
-        white win
-    '''
+    # white win
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
     nn.backpropagation(-1, np.array([0,0,1]))
@@ -44,14 +42,10 @@ for i in range(1000):
     nn.update()
     nn.backpropagation(-1, np.array([1,0,0]))
 
-nn.set_input(np.array([0,0,0,1,0,0,1,1,0]))
+nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
 nn.update()
 out = nn.get_output()
 print out
 #out = np.negative(out)
-print out
 out = np.exp(out)
-print out
-out[0]=0
-print out
 print out / np.sum(out)
