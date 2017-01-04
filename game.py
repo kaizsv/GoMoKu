@@ -43,24 +43,23 @@ class Game:
             return self.game_condition()
 
     def reinforcement_learning(self):
-        max_seq = self.board.size ** 2
+        max_turn = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(self.rl_iter_games):
             if j % 1000 == 0:
                 print j
             self.board.reset()
             reward = 0
-            winner = None
-            loser = None
+            winner = 0
             states_seq = []
             action_seq = []
             # black first move
             action = self.player1.fair_board_move(self.board)
             if self.d:
                 print 'first ', action
-            for i in range(max_seq - 1):
+            for turn in range(max_turn - 1):
                 # even for player1 (black), odd for player2 (white)
-                if i & 1:
+                if turn & 1:
                     player = self.player2
                     opponent = self.player1
                 else:
@@ -73,8 +72,14 @@ class Game:
                 opponent_state = opponent.convert_state(state)
                 action_prob = self.board.forward(opponent_state)
                 action = opponent.move(action_prob, self.board.legal_moves)
-                while not self.board.is_legal_move(action):
-                    action = opponent.move(action_prob, self.board.legal_moves)
+                if not self.board.is_legal_move(action):
+                    a_gold = np.zeros(max_turn)
+                    a_gold[action] = 1
+                    #reward = -1 if opponent.player == 1 else 1
+                    reward = -1
+                    self.board.backward(reward, opponent_state, a_gold)
+                    break
+
                 if self.d:
                     print 'state ', state
                     print 'opp_state ', opponent_state
@@ -87,18 +92,19 @@ class Game:
                     if self.d:
                         print 'winner ', opponent.player
                     reward = 1
-                    winner = opponent
-                    loser = player
+                    winner = opponent.player
                     break
                 elif self.board.is_full():
                     # tie game
-                    reward = 0
+                    reward = 0.2
+                    winner = 0
                     break
 
             if reward == 0:
                 continue
             for idx in range(len(states_seq)):
                 if idx & 1:
+                    continue
                     player = self.player2
                     opponent = self.player1
                 else:
@@ -109,9 +115,9 @@ class Game:
                 # opponent's action
                 state = opponent.convert_state(state)
                 a_gold_idx = action_seq[idx]
-                a_gold = np.zeros(max_seq)
+                a_gold = np.zeros(max_turn)
                 a_gold[a_gold_idx] = 1
-                reward = opponent.get_reward(winner.player)
+                reward = opponent.get_reward(winner)
                 if self.d:
                     print 'b state ', state
                 self.board.backward(reward, state, a_gold)
@@ -131,16 +137,16 @@ class Game:
         # start to play game
         if not self.board.load_nn(self.rl_iter_games):
             return
-        max_seq = self.board.size ** 2
+        max_turn = self.board.size ** 2
         print(self.board)
         # black first move
         action = self.player1.fair_board_move(self.board)
         if action < 0:
             new_game()
             return
-        for i in range(max_seq - 1):
+        for turn in range(max_turn - 1):
             # even for player1 (black), odd for player2 (white)
-            if i & 1:
+            if turn & 1:
                 player = self.player2
                 opponent = self.player1
             else:
@@ -157,7 +163,7 @@ class Game:
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:
                     print 'Illegal move'
-                action = opponent.move(action_prob)
+                action = opponent.move(action_prob, self.board.legal_moves)
             if action < 0:
                 new_game()
                 return

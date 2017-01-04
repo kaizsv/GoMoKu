@@ -6,10 +6,10 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 18]
+        self.layer_size = [self.input_size, 162, 27]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
-        self.eta = 0.02
+        self.eta = 0.01
         # input
         self.input = None
         # weights of layers
