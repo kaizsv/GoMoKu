@@ -27,7 +27,10 @@ class NeuralLayer(object):
         self._set_non_linear_out()
 
     def _set_non_linear_out(self):
-        self.output = np.tanh(self.output)
+        #self.output = self.output * (self.output > 0)
+        self.output = 1.0 / (1.0 + np.exp(np.negative(self.output)))
+        #self.output = self.output / np.sum(self.output)
 
     def get_d_non_linear_out(self):
-        return (1.0 - np.square(self.output))
+        #return 1.0 * (self.output != 0.0)
+        return self.output * (1.0 - self.output)

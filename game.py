@@ -75,7 +75,6 @@ class Game:
                 if not self.board.is_legal_move(action):
                     a_gold = np.zeros(max_turn)
                     a_gold[action] = 1
-                    #reward = -1 if opponent.player == 1 else 1
                     reward = -1
                     self.board.backward(reward, opponent_state, a_gold)
                     break
@@ -96,7 +95,7 @@ class Game:
                     break
                 elif self.board.is_full():
                     # tie game
-                    reward = 0.2
+                    reward = 0
                     winner = 0
                     break
 

@@ -6,7 +6,7 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 162, 27]
+        self.layer_size = [self.input_size, 54]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 0.01
