@@ -13,134 +13,160 @@ import numpy as np
 '''
 
 nn = NeuralNetwork(3)
-for i in range(1000):
+for i in range(5000):
+    if i % 1000 == 0:
+        print i
     '''
         black win
     '''
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([1,0,0]))
 
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([1,0,0,0,0,1,0,1,0]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([1,0,0,0,0,1,0,1,0]))
     nn.update()
-    nn.backpropagation(-1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([1,0,0,0,0,1,0,1,0]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 
-'''
 #----------------------------------------------------
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,1]))
 
     nn.set_input(np.array([0,0,0,0,0,1,1,1,0]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
+
+    nn.set_input(np.array([0,0,0,0,0,1,1,1,0]))
+    nn.update()
+    nn.backpropagation(np.array([0,0,-1]))
 
     nn.set_input(np.array([0,0,1,1,0,0,0,1,0]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
+
+    nn.set_input(np.array([0,0,1,1,0,0,0,1,0]))
+    nn.update()
+    nn.backpropagation(np.array([-1,0,0]))
+
+    nn.set_input(np.array([0,0,1,1,0,0,0,1,0]))
+    nn.update()
+    nn.backpropagation(np.array([0,0,-1]))
+
 #--------------------------------------------------
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([0,0,0,0,1,0,1,0,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
+
+    nn.set_input(np.array([0,0,0,0,1,0,1,0,1]))
+    nn.update()
+    nn.backpropagation(np.array([0,-1,0]))
 
     nn.set_input(np.array([0,1,0,0,0,1,1,0,0]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([1,0,0]))
+
+    nn.set_input(np.array([0,1,0,0,0,1,1,0,0]))
+    nn.update()
+    nn.backpropagation(np.array([0,-1,0]))
+
+    nn.set_input(np.array([0,1,0,0,0,1,1,0,0]))
+    nn.update()
+    nn.backpropagation(np.array([0,0,-1]))
 #------------------------------------------------
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([0,0,0,0,1,0,1,0,1]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([0,0,0,0,1,0,1,0,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,-1,0]))
 
     nn.set_input(np.array([0,1,0,1,0,0,0,0,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,1]))
 
     nn.set_input(np.array([0,1,0,1,0,0,0,0,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([0,1,0,1,0,0,0,0,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,-1,0]))
 #------------------------------------------------
     # white win
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 
     nn.set_input(np.array([0,0,0,0,0,1,1,1,0]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([0,0,0,0,0,1,1,1,0]))
     nn.update()
-    nn.backpropagation(1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 
     nn.set_input(np.array([0,0,1,0,1,0,1,0,0]))
     nn.update()
-    nn.backpropagation(-1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([0,0,1,0,1,0,1,0,0]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,-1,0]))
 
     nn.set_input(np.array([0,0,1,0,1,0,1,0,0]))
     nn.update()
-    nn.backpropagation(1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 #------------------------------------------------
     nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,1,0]))
+    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([1,0,0,0,1,0,0,0,1]))
     nn.update()
-    nn.backpropagation(-1, np.array([0,0,1]))
+    nn.backpropagation(np.array([0,0,-1]))
 
     nn.set_input(np.array([1,0,0,0,1,0,0,0,1]))
     nn.update()
-    nn.backpropagation(1, np.array([1,0,0]))
+    nn.backpropagation(np.array([-1,0,0]))
 
     nn.set_input(np.array([1,0,0,0,1,0,0,0,1]))
     nn.update()
-    nn.backpropagation(1, np.array([0,1,0]))
-'''
-nn.set_input(np.array([0,0,0,0,0,0,1,1,1]))
+    nn.backpropagation(np.array([0,-1,0]))
+
+nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
 nn.update()
 out = nn.get_output()
 print out

@@ -14,7 +14,7 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.nn = NeuralNetwork(self.size, phase=3)
+        #self.nn = NeuralNetwork(self.size, phase=3)
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -140,27 +140,31 @@ class Board:
 
         return False
 
-    def save_nn(self, n_games):
-        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
-        with open(path, 'wb') as save:
-            pickle.dump(self.nn, save)
+    def save_nn(self, n_games, p1, p2):
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p1.nn.__str__() + f_name
+        with open(str(p1.player)+path, 'wb') as save:
+            pickle.dump(p1.nn, save)
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p2.nn.__str__() + f_name
+        with open(str(p2.player)+path, 'wb') as save:
+            pickle.dump(p2.nn, save)
 
-    def load_nn(self, n_games):
-        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
+    def load_nn(self, n_games, p, s):
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p.nn.__str__() + f_name
         try:
-            with open(path, 'rb') as load:
-                self.nn = pickle.load(load)
+            with open(str(p.player)+path, 'rb') as load:
+                p.nn = pickle.load(load)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
             return False
-
+'''
     def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
         return self.nn.get_output()
 
-    def backward(self, reward, state, action_gold):
+    def backward(self, state, action_gold):
         self.nn.set_input(state)
         self.nn.update()
-        self.nn.backpropagation(reward, action_gold)
+        self.nn.backpropagation(action_gold)
+'''
