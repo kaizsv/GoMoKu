@@ -4,9 +4,9 @@ import numpy as np
 class NeuralNetwork(object):
     def __init__(self, size, phase=3):
         # layer parameters
-        self.input_size = 2* size ** 2
+        self.input_size = size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 108]
+        self.layer_size = [self.input_size, 9, 9, 9, 9, 9]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 0.02

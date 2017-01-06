@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 100000
+        self.rl_iter_games = 1000
         self.d = False
         self.game_condition()
 
@@ -46,8 +46,8 @@ class Game:
         max_turn = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(self.rl_iter_games):
-            if j % 1000 == 0:
-                print j
+            #if j % 1000 == 0:
+            print j
             self.board.reset()
             reward = 0
             winner = 0
@@ -68,24 +68,29 @@ class Game:
 
                 # current state
                 state = self.board.set_next_state(action, symbol=player.player)
+                states_seq.append(state)
+                action_seq.append(action)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
                 action_prob = opponent.forward(opponent_state)
                 action = opponent.move(action_prob, self.board.legal_moves)
-                if not self.board.is_legal_move(action):
-                    print 'b'
-                    a_gold = np.zeros(max_turn)
-                    a_gold[action] = -1
+                while not self.board.is_legal_move(action):
+                    #a_gold = np.zeros(max_turn)
+                    a_gold = np.full(max_turn, 0.1)
+                    for m in self.board.legal_moves:
+                        a_gold[m] = 0.9
+                    #a_gold[action] = -1
                     opponent.backward(opponent_state, a_gold)
-                    break
+                    action_prob = opponent.forward(opponent_state)
+                    action = opponent.move(action_prob, self.board.legal_moves)
 
                 if self.d:
                     print 'state ', state
                     print 'opp_state ', opponent_state
                     print 'action_prob ', action_prob
                     print 'action ', action
-                states_seq.append(state)
-                action_seq.append(action)
+                #states_seq.append(state)
+                #action_seq.append(action)
                 if self.board.is_terminal(action, symbol=opponent.player):
                     # opponent win
                     #if self.d:
@@ -96,13 +101,15 @@ class Game:
                 elif self.board.is_full():
                     # tie game
                     #print 'tie'
-                    reward = 0.2
+                    reward = 0
                     winner = 0
                     break
 
             if reward == 0:
                 continue
-            for idx in range(len(states_seq)):
+            start_state = 1 if winner == 2 else 0
+            while start_state < range(len(states_seq)):
+                '''
                 if idx & 1:
                     #continue
                     player = self.player2
@@ -110,6 +117,13 @@ class Game:
                 else:
                     player = self.player1
                     opponent = self.player2
+                '''
+                if start_state > 0:
+                    state = states_seq[start_state-1]
+                state = np.where(state==0, 0, np.where(state==1, 1, -1))
+                a_gold = np.full(max_turn, 0.1)
+                a_gold[action_seq[start_state]] = 0.9
+                '''
                 # current state
                 state = states_seq[idx]
                 # opponent's action
@@ -121,6 +135,9 @@ class Game:
                 if self.d:
                     print 'b state ', state
                 opponent.backward(state, a_gold)
+                '''
+                self.player1.backward(state, a_gold)
+                self.player2.backward(state, a_gold)
         end_time = timeit.default_timer()
         self.board.save_nn(self.rl_iter_games, self.player1, self.player2)
         print "Finish learning %d games in %d minutes" % (self.rl_iter_games, (end_time-start_time)/60)

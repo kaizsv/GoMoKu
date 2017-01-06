@@ -12,17 +12,22 @@ class Agent(Player):
             print action_prob
         #if self.player == 2:
             #action_prob = np.negative(action_prob)
-        action_prob = np.exp(action_prob)
+        '''action_prob = np.exp(action_prob)
         for i in range(len(action_prob)):
             action_prob[i] = 0 if i not in legal_moves else action_prob[i]
         action_prob = action_prob / np.sum(action_prob)
-
+        '''
         if self.is_learning:
-            return np.argmax(np.random.multinomial(1, action_prob[:]))
+            max_out = 4
+            for i in range(len(action_prob)):
+                if action_prob[i] > action_prob[max_out]:
+                    max_out = i
+            return max_out
+            #return np.argmax(np.random.multinomial(1, action_prob[:]))
             #return np.argmax(action_prob)
         else:
-            #for i in range(len(action_prob)):
-                #action_prob[i] = 0 if i not in legal_moves else action_prob[i]
+            for i in range(len(action_prob)):
+                action_prob[i] = 0 if i not in legal_moves else action_prob[i]
             print action_prob
             return np.argmax(action_prob)
 
@@ -57,6 +62,7 @@ class Agent(Player):
     def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
+        print self.nn.get_output()
         return self.nn.get_output()
 
     def backward(self, state, action_gold):
