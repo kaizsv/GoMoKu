@@ -45,14 +45,15 @@ class Game:
     def reinforcement_learning(self):
         max_turn = self.board.size ** 2
         start_time = timeit.default_timer()
+        states_seq = []
+        action_seq = []
         for j in range(self.rl_iter_games):
             #if j % 1000 == 0:
             print j
             self.board.reset()
             reward = 0
             winner = 0
-            states_seq = []
-            action_seq = []
+            t_turn = 0
             # black first move
             action = self.player1.fair_board_move(self.board)
             if self.d:
@@ -66,10 +67,25 @@ class Game:
                     player = self.player1
                     opponent = self.player2
 
+                if self.board.is_terminal(action, symbol=player.player):
+                    # opponent win
+                    #if self.d:
+                    #print 'winner ', opponent.player
+                    reward = 1
+                    winner = opponent.player
+                    break
+                elif self.board.is_full():
+                    # tie game
+                    #print 'tie'
+                    print self.board
+                    reward = 0
+                    winner = 0
+                    break
                 # current state
                 state = self.board.set_next_state(action, symbol=player.player)
-                states_seq.append(state)
-                action_seq.append(action)
+                states_seq.insert(t_turn,state)
+                action_seq.insert(t_turn,action)
+                t_turn+=1
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
                 action_prob = opponent.forward(opponent_state)
@@ -91,24 +107,11 @@ class Game:
                     print 'action ', action
                 #states_seq.append(state)
                 #action_seq.append(action)
-                if self.board.is_terminal(action, symbol=opponent.player):
-                    # opponent win
-                    #if self.d:
-                    #print 'winner ', opponent.player
-                    reward = 1
-                    winner = opponent.player
-                    break
-                elif self.board.is_full():
-                    # tie game
-                    #print 'tie'
-                    reward = 0
-                    winner = 0
-                    break
 
             if reward == 0:
                 continue
             start_state = 1 if winner == 2 else 0
-            while start_state < range(len(states_seq)):
+            while (start_state <= t_turn):
                 '''
                 if idx & 1:
                     #continue
@@ -120,9 +123,12 @@ class Game:
                 '''
                 if start_state > 0:
                     state = states_seq[start_state-1]
+                else:
+                    state = np.zeros(max_turn)
                 state = np.where(state==0, 0, np.where(state==1, 1, -1))
+                a_gold_idx = action_seq[start_state]
                 a_gold = np.full(max_turn, 0.1)
-                a_gold[action_seq[start_state]] = 0.9
+                a_gold[start_state] = 0.9
                 '''
                 # current state
                 state = states_seq[idx]
@@ -136,6 +142,7 @@ class Game:
                     print 'b state ', state
                 opponent.backward(state, a_gold)
                 '''
+                start_state+=1
                 self.player1.backward(state, a_gold)
                 self.player2.backward(state, a_gold)
         end_time = timeit.default_timer()

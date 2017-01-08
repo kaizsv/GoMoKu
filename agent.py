@@ -62,7 +62,6 @@ class Agent(Player):
     def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
-        print self.nn.get_output()
         return self.nn.get_output()
 
     def backward(self, state, action_gold):
