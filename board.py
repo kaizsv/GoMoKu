@@ -70,7 +70,7 @@ class Board:
     def is_full(self):
         # if there are only one action left in legal_moves
         # then it must be fulled
-        return len(self.legal_moves) == 1
+        return len(self.legal_moves) == 0
 
     def is_terminal(self, action, symbol):
         x, y = self._decode_action(action)

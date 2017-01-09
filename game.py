@@ -45,8 +45,8 @@ class Game:
     def reinforcement_learning(self):
         max_turn = self.board.size ** 2
         start_time = timeit.default_timer()
-        states_seq = []
-        action_seq = []
+        states_seq = [None for _ in range(max_turn)]
+        action_seq = [None for _ in range(max_turn)]
         for j in range(self.rl_iter_games):
             #if j % 1000 == 0:
             print j
@@ -58,7 +58,7 @@ class Game:
             action = self.player1.fair_board_move(self.board)
             if self.d:
                 print 'first ', action
-            for turn in range(max_turn - 1):
+            for turn in range(max_turn):
                 # even for player1 (black), odd for player2 (white)
                 if turn & 1:
                     player = self.player2
@@ -67,6 +67,11 @@ class Game:
                     player = self.player1
                     opponent = self.player2
 
+                # current state
+                state = self.board.set_next_state(action, symbol=player.player)
+                states_seq[t_turn]=state
+                action_seq[t_turn]=action
+                t_turn+=1
                 if self.board.is_terminal(action, symbol=player.player):
                     # opponent win
                     #if self.d:
@@ -81,11 +86,6 @@ class Game:
                     reward = 0
                     winner = 0
                     break
-                # current state
-                state = self.board.set_next_state(action, symbol=player.player)
-                states_seq.insert(t_turn,state)
-                action_seq.insert(t_turn,action)
-                t_turn+=1
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
                 action_prob = opponent.forward(opponent_state)
@@ -111,7 +111,7 @@ class Game:
             if reward == 0:
                 continue
             start_state = 1 if winner == 2 else 0
-            while (start_state <= t_turn):
+            while (start_state < t_turn):
                 '''
                 if idx & 1:
                     #continue
