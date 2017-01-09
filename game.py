@@ -70,13 +70,13 @@ class Game:
                 state = self.board.set_next_state(action, symbol=player.player)
                 # opponent's action
                 opponent_state = opponent.convert_state(state)
-                action_prob = opponent.forward(opponent_state)
+                action_prob = self.board.forward(opponent_state)
                 action = opponent.move(action_prob, self.board.legal_moves)
                 if not self.board.is_legal_move(action):
                     print 'b'
                     a_gold = np.zeros(max_turn)
                     a_gold[action] = -1
-                    opponent.backward(opponent_state, a_gold)
+                    self.board.backward(opponent_state, a_gold)
                     break
 
                 if self.d:
@@ -120,7 +120,7 @@ class Game:
                 a_gold[a_gold_idx] = reward
                 if self.d:
                     print 'b state ', state
-                opponent.backward(state, a_gold)
+                self.board.backward(state, a_gold)
         end_time = timeit.default_timer()
         self.board.save_nn(self.rl_iter_games, self.player1, self.player2)
         print "Finish learning %d games in %d minutes" % (self.rl_iter_games, (end_time-start_time)/60)

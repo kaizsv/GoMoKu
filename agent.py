@@ -5,7 +5,7 @@ import numpy as np
 class Agent(Player):
     def __init__(self, player, learning, n):
         super(Agent, self).__init__(player, learning, n)
-        self.nn = NeuralNetwork(n, phase=3)
+        #self.nn = NeuralNetwork(n, phase=3)
 
     def move(self, action_prob, legal_moves):
         if not self.is_learning:
@@ -53,7 +53,7 @@ class Agent(Player):
                 return 0.5
             else:
                 return 0.5
-
+'''
     def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
@@ -63,3 +63,4 @@ class Agent(Player):
         self.nn.set_input(state)
         self.nn.update()
         self.nn.backpropagation(action_gold)
+'''

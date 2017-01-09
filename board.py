@@ -14,7 +14,7 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        #self.nn = NeuralNetwork(self.size, phase=3)
+        self.nn = NeuralNetwork(self.size, phase=3)
 
     def set_player(self, p1, p2):
         self.player1 = p1
@@ -157,7 +157,7 @@ class Board:
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
             return False
-'''
+
     def forward(self, state):
         self.nn.set_input(state)
         self.nn.update()
@@ -167,4 +167,3 @@ class Board:
         self.nn.set_input(state)
         self.nn.update()
         self.nn.backpropagation(action_gold)
-'''
