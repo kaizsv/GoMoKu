@@ -122,7 +122,7 @@ class Game:
                     print 'b state ', state
                 self.board.backward(state, a_gold)
         end_time = timeit.default_timer()
-        self.board.save_nn(self.rl_iter_games, self.player1, self.player2)
+        self.board.save_nn(self.rl_iter_games)
         print "Finish learning %d games in %d minutes" % (self.rl_iter_games, (end_time-start_time)/60)
 
     def play_game(self):
@@ -139,7 +139,7 @@ class Game:
         else:
             p, s = self.player2, 'p2_'
         # start to play game
-        if not self.board.load_nn(self.rl_iter_games, p, s):
+        if not self.board.load_nn(self.rl_iter_games):
             return
         max_turn = self.board.size ** 2
         print(self.board)

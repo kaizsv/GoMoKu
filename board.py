@@ -140,19 +140,16 @@ class Board:
 
         return False
 
-    def save_nn(self, n_games, p1, p2):
-        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p1.nn.__str__() + f_name
-        with open(str(p1.player)+path, 'wb') as save:
-            pickle.dump(p1.nn, save)
-        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p2.nn.__str__() + f_name
-        with open(str(p2.player)+path, 'wb') as save:
-            pickle.dump(p2.nn, save)
+    def save_nn(self, n_games):
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
+        with open(path, 'wb') as save:
+            pickle.dump(self.nn, save)
 
-    def load_nn(self, n_games, p, s):
+    def load_nn(self, n_games):
         path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p.nn.__str__() + f_name
         try:
-            with open(str(p.player)+path, 'rb') as load:
-                p.nn = pickle.load(load)
+            with open(path, 'rb') as load:
+                self.nn = pickle.load(load)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
