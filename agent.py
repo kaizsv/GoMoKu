@@ -12,17 +12,19 @@ class Agent(Player):
             print action_prob
         #if self.player == 2:
             #action_prob = np.negative(action_prob)
+        
         action_prob = np.exp(action_prob)
         for i in range(len(action_prob)):
             action_prob[i] = 0 if i not in legal_moves else action_prob[i]
         action_prob = action_prob / np.sum(action_prob)
+        
 
         if self.is_learning:
             return np.argmax(np.random.multinomial(1, action_prob[:]))
             #return np.argmax(action_prob)
         else:
             #for i in range(len(action_prob)):
-                #action_prob[i] = 0 if i not in legal_moves else action_prob[i]
+                #action_prob[i] = -np.inf if i not in legal_moves else action_prob[i]
             print action_prob
             return np.argmax(action_prob)
 

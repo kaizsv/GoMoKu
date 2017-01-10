@@ -2,11 +2,11 @@ from layer import NeuralLayer
 import numpy as np
 
 class NeuralNetwork(object):
-    def __init__(self, size, phase=2):
+    def __init__(self, size, phase=3):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 36, 36, 36, 18]
+        self.layer_size = [self.input_size, 81, 81, 54, 54, 27]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 0.02
@@ -42,8 +42,15 @@ class NeuralNetwork(object):
     def backpropagation(self, action_gold):
         # calculate output error
         out = self.get_output()
-        characteristic = np.subtract(action_gold, out)
+        #print 'pre prob ', out
+        characteristic = self.get_output()
+        t = np.where(action_gold!=0)[0][0]
+        characteristic[t] = action_gold[t]
+        characteristic = np.subtract(characteristic, out)
         out_error = characteristic * self.output_layer.get_d_non_linear_out()
+        #out_error = action_gold * self.output_layer.get_d_non_linear_out()
+        #print 'char ', characteristic
+        #print 'out_error ', out_error
 
         # hidden layers error
         hidden_errors = list()
@@ -70,3 +77,5 @@ class NeuralNetwork(object):
         out_input = self.output_layer.get_input()
         delta = self.eta * np.outer(out_error, out_input)
         self.output_layer.modify_weight(delta)
+        self.update()
+        #print 'after prot ',self.get_output()

@@ -14,7 +14,7 @@ class Board:
         self.renju = r
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
-        self.nn = NeuralNetwork(self.size, phase=2)
+        self.nn = NeuralNetwork(self.size, phase=3)
 
     def set_player(self, p1, p2):
         self.player1 = p1
