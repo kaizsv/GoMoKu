@@ -14,9 +14,9 @@ class Player(object):
     def convert_state(self, state):
         # TODO: this might be wrong
         #return np.where(state==0, 0, np.where(state==1, 1, -1))
-        #opp_player = 2 if self.player == 1 else 1
-        #d_phase = { 0:2, self.player:0, opp_player:1 }
-        d_phase = { 0:2, 1:0, 2:1 }
+        opp_player = 2 if self.player == 1 else 1
+        d_phase = { self.player:0, opp_player:1 }
+        #d_phase = { 0:2, 1:0, 2:1 }
         c_state = np.zeros((2, self.board_size ** 2), dtype=np.int)
         for idx, s in enumerate(state):
             if s != 0:

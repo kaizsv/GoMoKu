@@ -57,7 +57,7 @@ class Game:
             action = self.player1.fair_board_move(self.board)
             if self.d:
                 print 'first ', action
-            for turn in range(max_turn - 1):
+            for turn in range(max_turn):
                 # even for player1 (black), odd for player2 (white)
                 if turn & 1:
                     player = self.player2
@@ -96,7 +96,7 @@ class Game:
                 elif self.board.is_full():
                     # tie game
                     #print 'tie'
-                    reward = 0.2
+                    reward = 0
                     winner = 0
                     break
 

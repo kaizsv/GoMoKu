@@ -5,7 +5,7 @@ class NeuralLayer(object):
     def __init__(self, size, in_size):
         self.size = size
         self.in_size = in_size
-        self.w = np.random.rand(size, in_size) * np.sqrt(2.0/in_size)
+        self.w = (np.random.rand(size, in_size)-0.5) * np.sqrt(2.0/in_size)
         self.input = None
         self.output = None
 
