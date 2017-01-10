@@ -146,7 +146,7 @@ class Board:
             pickle.dump(self.nn, save)
 
     def load_nn(self, n_games):
-        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + p.nn.__str__() + f_name
+        path = str(self.size) + 'x' + str(self.size) + '_' + str(n_games) + 'games_' + self.nn.__str__() + f_name
         try:
             with open(path, 'rb') as load:
                 self.nn = pickle.load(load)

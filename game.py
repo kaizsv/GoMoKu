@@ -163,7 +163,7 @@ class Game:
             # opponent's action
             opponent_state = opponent.convert_state(state)
             if type(opponent) is Agent:
-                action_prob = opponent.forward(opponent_state)
+                action_prob = self.board.forward(opponent_state)
             action = opponent.move(action_prob, self.board.legal_moves)
             while not self.board.is_legal_move(action) and not action < 0:
                 if type(opponent) is Player:
