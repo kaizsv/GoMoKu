@@ -26,14 +26,10 @@ for i in range(5000):
     nn.set_input(np.array([1,0,0,0,0,1]))
     nn.update()
     nn.backpropagation(np.array([0,1,0]))
-'''
+
     nn.set_input(np.array([0,0,0,1,0,0]))
     nn.update()
     nn.backpropagation(np.array([-1,0,0]))
-
-    nn.set_input(np.array([1,0,0,0,0,1]))
-    nn.update()
-    nn.backpropagation(np.array([0,1,0]))
 
     nn.set_input(np.array([1,0,0,0,0,1]))
     nn.update()
@@ -44,10 +40,6 @@ for i in range(5000):
     nn.backpropagation(np.array([0,0,-1]))
 
 #----------------------------------------------------
-    nn.set_input(np.array([0,0,0,0,0,0]))
-    nn.update()
-    nn.backpropagation(np.array([0,0,1]))
-
     nn.set_input(np.array([0,0,0,0,0,1]))
     nn.update()
     nn.backpropagation(np.array([-1,0,0]))
@@ -69,10 +61,6 @@ for i in range(5000):
     nn.backpropagation(np.array([0,0,-1]))
 
 #--------------------------------------------------
-    nn.set_input(np.array([0,0,0,0,0,0]))
-    nn.update()
-    nn.backpropagation(np.array([0,1,0]))
-
     nn.set_input(np.array([0,0,0,0,1,0]))
     nn.update()
     nn.backpropagation(np.array([0,0,-1]))
@@ -93,10 +81,6 @@ for i in range(5000):
     nn.update()
     nn.backpropagation(np.array([0,0,-1]))
 #------------------------------------------------
-    nn.set_input(np.array([0,0,0,0,0,0]))
-    nn.update()
-    nn.backpropagation(np.array([0,1,0]))
-
     nn.set_input(np.array([0,0,0,0,1,0]))
     nn.update()
     nn.backpropagation(np.array([-1,0,0]))
@@ -118,10 +102,6 @@ for i in range(5000):
     nn.backpropagation(np.array([0,-1,0]))
 #------------------------------------------------
     # white win
-    nn.set_input(np.array([0,0,0,0,0,0]))
-    nn.update()
-    nn.backpropagation(np.array([0,0,-1]))
-
     nn.set_input(np.array([0,0,0,0,0,1]))
     nn.update()
     nn.backpropagation(np.array([0,1,0]))
@@ -142,10 +122,6 @@ for i in range(5000):
     nn.update()
     nn.backpropagation(np.array([0,0,-1]))
 #------------------------------------------------
-    nn.set_input(np.array([0,0,0,0,0,0]))
-    nn.update()
-    nn.backpropagation(np.array([-1,0,0]))
-
     nn.set_input(np.array([0,0,0,1,0,0]))
     nn.update()
     nn.backpropagation(np.array([0,1,0]))
@@ -165,7 +141,7 @@ for i in range(5000):
     nn.set_input(np.array([1,0,0,0,1,0]))
     nn.update()
     nn.backpropagation(np.array([0,-1,0]))
-'''
+
 a=np.array([0,1,0,0,0,1])
 nn.set_input(a)
 nn.update()
