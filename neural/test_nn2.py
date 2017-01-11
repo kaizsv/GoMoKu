@@ -26,7 +26,7 @@ for i in range(5000):
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
     nn.backpropagation(np.array([0,0,-1]))
-
+'''
     nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
     nn.update()
     nn.backpropagation(np.array([-1,0,0]))
@@ -165,11 +165,13 @@ for i in range(5000):
     nn.set_input(np.array([1,0,0,0,1,0,0,0,1]))
     nn.update()
     nn.backpropagation(np.array([0,-1,0]))
-
-nn.set_input(np.array([0,0,0,1,0,0,0,1,1]))
+'''
+a=np.array([0,0,0,1,0,0,0,1,1])
+nn.set_input(a)
 nn.update()
 out = nn.get_output()
-print out
+print a, out
+b=np.array([0,1,0,0,0,1,1,0,0])
 nn.set_input(np.array([0,1,0,0,0,1,1,0,0]))
 nn.update()
-print nn.get_output()
+print b, nn.get_output()

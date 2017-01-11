@@ -12,8 +12,8 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 100000
-        self.d = False
+        self.rl_iter_games = 10000
+        self.d = 0
         self.game_condition()
 
     def game_condition(self):
@@ -57,7 +57,7 @@ class Game:
             # black first move
             action = self.player1.fair_board_move(self.board)
             if self.d:
-                print 'first ', action
+                print '\nfirst ', action
             for turn in range(max_turn):
                 # even for player1 (black), odd for player2 (white)
                 if turn & 1:
@@ -124,7 +124,7 @@ class Game:
                 a_gold[a_gold_idx] = reward
                 if self.d:
                     print '\nb state ', state
-                self.board.backward(state, a_gold)
+                self.board.backward(state, a_gold, self.d)
                 if self.d:
                     print 'b pre cal prob ', action_prob_seq[idx]
                     print 'b action ', a_gold_idx, 'reward ', reward

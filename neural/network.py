@@ -6,10 +6,10 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 81, 81, 54, 54, 27]
+        self.layer_size = [self.input_size, 81, 81, 81, 54, 54, 54, 27, 27]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
-        self.eta = 0.02
+        self.eta = 1
         # input
         self.input = None
         # weights of layers
@@ -39,18 +39,22 @@ class NeuralNetwork(object):
             x = self.hidden_layers[i].get_output()
         self.output_layer.update(x)
 
-    def backpropagation(self, action_gold):
+    def backpropagation(self, action_gold, d=0):
         # calculate output error
         out = self.get_output()
-        #print 'pre prob ', out
+        if d:
+            print 'pre prob ', out
         characteristic = self.get_output()
         t = np.where(action_gold!=0)[0][0]
         characteristic[t] = action_gold[t]
+        if d:
+            print 'char ', characteristic
         characteristic = np.subtract(characteristic, out)
         out_error = characteristic * self.output_layer.get_d_non_linear_out()
         #out_error = action_gold * self.output_layer.get_d_non_linear_out()
-        #print 'char ', characteristic
-        #print 'out_error ', out_error
+        if d:
+            print 'char ', characteristic
+            print 'out_error ', out_error
 
         # hidden layers error
         hidden_errors = list()
