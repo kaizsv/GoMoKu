@@ -161,22 +161,188 @@ class Board:
             print '\nPlease choose 2 to learn weight\n'
             return False
 
+
+    def in_W(self, state):
+
+        temp = np.asarray(state)
+        temp = temp.reshape((self.size, self.size))
+        if state in self.W:
+            return 1
+        elif _reshape(np.rot90(temp, 1)) in self.W:
+            return 2
+        elif _reshape(np.rot90(temp, 2)) in self.W:
+            return 3
+        elif _reshape(np.rot90(temp, 3)) in self.W:
+            return 4
+        elif _reshape(np.flipud(temp)) in self.W:
+            return 5
+        elif _reshape(np.fliplr(temp)) in self.W:
+            return 6
+        elif _reshape(np.fliplr(np.flipud(temp.T))) in self.W:
+            return 7
+        elif _reshape(temp.T) in self.W:
+            return 8
+        else:
+            return 0
+
+    def get_W(self, case, state):
+        temp = np.asarray(state)
+        temp = temp.reshape((self.size, self.size))
+        if case == 1 or case == 0:
+            return self.W[state]
+        elif case == 2:
+            prob = self.W[_reshape(np.rot90(temp, 1))]
+            prob = prob.reshape((self.size, self.size))
+            return np.rot90(prob, 3).reshape(self.size**2)
+        elif case == 3:
+            prob = self.W[_reshape(np.rot90(temp, 2))]
+            prob = prob.reshape((self.size, self.size))
+            return np.rot90(prob, 2).reshape(self.size**2)
+        elif case == 4:
+            prob = self.W[_reshape(np.rot90(temp, 3))]
+            prob = prob.reshape((self.size, self.size))
+            return np.rot90(prob, 1).reshape(self.size**2)
+        elif case == 5:
+            prob = self.W[_reshape(np.flipud(temp))]
+            prob = prob.reshape((self.size, self.size))
+            return np.flipud(temp).reshape(self.size**2)
+        elif case == 6:
+            prob = self.W[_reshape(np.fliplr(temp))]
+            prob = prob.reshape((self.size, self.size))
+            return np.fliplr(temp).reshape(self.size**2)
+        elif case == 7:
+            prob = self.W[_reshape(np.fliplr(np.flipud(temp.T)))]
+            prob = prob.reshape((self.size, self.size))
+            return np.fliplr(np.flipud(prob.T)).reshape(self.size**2)
+        elif case == 8:
+            prob = self.W[_reshape(temp.T)]
+            prob = prob.reshape((self.size, self.size))
+            return prob.T.reshape(self.size**2)
+
+    def get_reshape_state(self, case, state):
+        temp = np.asarray(state)
+        temp = temp.reshape((self.size, self.size))
+        if case == 1 or case == 0:
+            return state
+        elif case == 2:
+            return _reshape(np.rot90(temp, 1))
+        elif case == 3:
+            return _reshape(np.rot90(temp, 2))
+        elif case == 4:
+            return _reshape(np.rot90(temp, 3))
+        elif case == 5:
+            return _reshape(np.flipud(temp))
+        elif case == 6:
+            return _reshape(np.fliplr(temp))
+        elif case == 7:
+            return _reshape(np.fliplr(np.flipud(temp.T)))
+        elif case == 8:
+            return _reshape(temp.T)
+
+    def get_reshape_delta(self, case, delta):
+        delta = delta.reshape((self.size, self.size))
+        if case == 1 or case == 0:
+            return delta
+        elif case == 2:
+            return np.rot90(delta, 1).reshape(self.size**2)
+        elif case == 3:
+            return np.rot90(delta, 2).reshape(self.size**2)
+        elif case == 4:
+            return np.rot90(delta, 3).reshape(self.size**2)
+        elif case == 5:
+            return np.flipud(delta).reshape(self.size**2)
+        elif case == 6:
+            return np.fliplr(delta).reshape(self.size**2)
+        elif case == 7:
+            return np.fliplr(np.flipud(delta.T)).reshape(self.size**2)
+        elif case == 8:
+            return temp.T.reshape(self.size**2)
+
+    def reshape_legal_moves(self, case, legal_moves):
+        l = np.zeros(self.size**2)
+        for i in legal_moves:
+            l[i] = 1
+        l = l.reshape((self.size, self.size))
+        if case == 1 or case == 0:
+            return legal_moves
+        elif case == 2:
+            l = np.rot90(l, 1).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 3:
+            l = np.rot90(l, 2).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 4:
+            l = np.rot90(l, 3).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 5:
+            l = np.flipud(l).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 6:
+            l = np.fliplr(l).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 7:
+            l = np.fliplr(np.flipud(l.T)).reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+        elif case == 8:
+            l = l.T.reshape(self.size**2)
+            legal = []
+            for i in range(len(l)):
+                if l[i] == 1:
+                    legal.append(i)
+            return legal
+
     def forward(self, state, legal_moves):
-        if state not in self.W:
+        case = self.in_W(state)
+        debug = list(state).count(0)
+        if debug==8 and (case==0 or case == 2):
+            print case, state
+        if case == 0:
             if not self.is_learning:
                 print '\nno state in policy network\n'
                 sys.exit()
             self.W[state] = np.random.rand(self.size ** 2) / (2*self.size**2)
-        a_in = self.W[state]
+        a_in = self.get_W(case, state)
+        if debug==8 and (case==0 or case == 2):
+            print a_in
         a_in = np.exp(a_in)
+        #legal_moves = self.reshape_legal_moves(case, legal_moves)
         for i in range(len(a_in)):
             a_in[i] = 0 if i not in legal_moves else a_in[i]
         a_out = (a_in) / np.sum(a_in)
-        return a_out
+        return case, a_out
 
-    def backward(self, reward, state, characteristic, d):
+    def backward(self, reward, case, state, characteristic, d):
         if d:
             print 'b state ', state
             print 'b charac ', characteristic
             print 'b ', self.eta * reward * characteristic
-        self.W[state] += self.eta * reward * characteristic
+        delta = self.eta * reward * characteristic
+        state = self.get_reshape_state(case, state)
+        #self.W[state] += self.get_reshape_delta(case, delta)
+
+def _reshape(s):
+    return tuple(s.reshape(3**2))
