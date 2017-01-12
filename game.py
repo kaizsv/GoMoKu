@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 100000
+        self.rl_iter_games = 1000000
         self.d = False
         self.game_condition()
 
@@ -148,6 +148,8 @@ class Game:
         self.board.is_learning = False
         self.board.reset()
         self.player1 = Player(1, False, self.board.size)
+        self.player2 = Agent(2, False, self.board.size)
+        self.board.set_player(self.player1, self.player2)
 
         # sub function for new game
         def new_game():

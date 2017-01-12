@@ -13,7 +13,7 @@ def main():
     elif b == 2:
         s, r = 3, 3
     elif b == 3:
-        s, r = 5, 5
+        s, r = 5, 3
     mode = 1
     while mode:
         game = Game(s, r)
