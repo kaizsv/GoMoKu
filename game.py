@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 1000
+        self.rl_iter_games = 50000
         self.d = False
         self.game_condition()
 
