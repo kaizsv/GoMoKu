@@ -12,7 +12,7 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 50000
+        self.rl_iter_games = 100000
         self.d = False
         self.game_condition()
 
@@ -140,10 +140,14 @@ class Game:
                     #self.board.backward(0.5, state, a_gold - a_out)
                     #self.board.backward(0.5, state, a_gold - a_out)
         end_time = timeit.default_timer()
-        self.board.save_weights(self.rl_iter_games)
+        #self.board.save_weights(self.rl_iter_games)
         print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
+        self.play_game()
 
     def play_game(self):
+        self.board.is_learning = False
+        self.board.reset()
+        self.player1 = Player(1, False, self.board.size)
 
         # sub function for new game
         def new_game():
@@ -153,8 +157,8 @@ class Game:
                 self.condition = 0
 
         # start to play game
-        if not self.board.load_weights(self.rl_iter_games):
-            return
+        #if not self.board.load_weights(self.rl_iter_games):
+            #return
         max_seq = self.board.size ** 2
         print(self.board)
         # black first move

@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 import sys
 
 class Board:
@@ -12,7 +13,7 @@ class Board:
         self.legal_moves = [i for i in range(self.size ** 2)]
         self.symbol = {0:'-', 1:'X', 2:'O'}
         self.W = dict()
-        self.w_file = 'rl_weight.npy'
+        self.w_file = '.obj'
         self.eta = 0.02
         self.is_learning = learning
 
@@ -145,17 +146,21 @@ class Board:
 
     def save_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
-        np.save(path, self.W)
+        with open(path, 'wb') as save:
+            pickle.dump(self.W, save)
+        '''
         # ignore test file while board size is 15
         if self.size == 3:
             with open('for_test.txt', 'w') as f:
                 for key, value in self.W.items():
                     f.write('%s: %s\n' % (key, value))
+        '''
 
     def load_weights(self, n_games):
         path = str(n_games) + '_' + str(self.size) + 'x' + str(self.size) + '_' + self.w_file
         try:
-            self.W = np.load(path).item()
+            with open(path, 'rb') as load:
+                self.W = pickle.load(load)
             return True
         except IOError:
             print '\nPlease choose 2 to learn weight\n'
