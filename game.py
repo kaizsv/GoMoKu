@@ -19,7 +19,7 @@ class Game:
     def game_condition(self):
         condition = input('\nChoose game mode\n1) single player\n2) learning\n3) exit\n>')
         if condition == 1:
-            self.board = Board(n=self.size, r=self.renju, learning=False)
+            #self.board = Board(n=self.size, r=self.renju, learning=False)
             first = input('\nYou want to play\n1) black\n2) white\n>')
             if first == 1:
                 self.player1 = Player(1, False, self.board.size)
@@ -142,14 +142,10 @@ class Game:
         end_time = timeit.default_timer()
         #self.board.save_weights(self.rl_iter_games)
         print "Finish learning %d games in %d seconds" % (self.rl_iter_games, end_time-start_time)
-        self.play_game()
 
     def play_game(self):
         self.board.is_learning = False
         self.board.reset()
-        self.player1 = Player(1, False, self.board.size)
-        self.player2 = Agent(2, False, self.board.size)
-        self.board.set_player(self.player1, self.player2)
 
         # sub function for new game
         def new_game():

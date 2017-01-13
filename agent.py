@@ -9,6 +9,7 @@ class Agent(Player):
         if self.is_learning:
             return np.argmax(np.random.multinomial(1, action_prob[:]))
         else:
+            print action_prob
             return np.argmax(action_prob)
 
     def fair_board_move(self, board, action_prob):
