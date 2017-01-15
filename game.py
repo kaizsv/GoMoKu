@@ -12,8 +12,8 @@ class Game:
         self.renju = renju
         self.board = None
         self.condition = 1
-        self.rl_iter_games = 1000
-        self.d = 1
+        self.rl_iter_games = 100000
+        self.d = 0
         self.game_condition()
 
     def game_condition(self):
@@ -77,7 +77,7 @@ class Game:
                     print 'b'
                     a_gold = np.zeros(max_turn)
                     a_gold[action] = -1
-                    self.board.backward(opponent_state, a_gold)
+                    self.board.backward(opponent_state, a_gold, self.d)
                     action_prob = self.board.forward(opponent_state)
                     action = opponent.move(action_prob, self.board.legal_moves)
 
@@ -108,7 +108,7 @@ class Game:
                 continue
             for idx in range(len(states_seq)):
                 if idx & 1:
-                    continue
+                    #continue
                     player = self.player2
                     opponent = self.player1
                 else:

@@ -6,7 +6,7 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 81, 81, 54, 54, 27]
+        self.layer_size = [self.input_size, 81]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 0.1
@@ -51,7 +51,7 @@ class NeuralNetwork(object):
             print 'char ', characteristic
         characteristic = np.subtract(characteristic, out)
         #out_error = characteristic * self.output_layer.get_d_non_linear_out()
-        out_error = action_gold * self.output_layer.get_d_non_linear_out()
+        out_error = characteristic * self.output_layer.get_d_non_linear_out()
         if d:
             print 'char ', characteristic
             print 'out_error ', out_error
