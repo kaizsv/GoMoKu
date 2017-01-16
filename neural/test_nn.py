@@ -142,12 +142,12 @@ for i in range(5000):
     nn.update()
     nn.backpropagation(np.array([0,-1,0]))
 
-a=np.array([0,1,0,0,0,1])
+a=np.array([0,1,0,1,0,0])
 nn.set_input(a)
 nn.update()
 out = nn.get_output()
 print a, out
-b=np.array([1,0,0,0,0,1])
+b=np.array([0,0,0,1,0,0])
 nn.set_input(b)
 nn.update()
 out = nn.get_output()

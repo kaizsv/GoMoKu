@@ -46,8 +46,8 @@ class Game:
         max_turn = self.board.size ** 2
         start_time = timeit.default_timer()
         for j in range(self.rl_iter_games):
-            if j % 1000 == 0:
-                print j
+            #if j % 1000 == 0:
+            print j
             self.board.reset()
             reward = 0
             winner = 0

@@ -6,7 +6,7 @@ class NeuralNetwork(object):
         # layer parameters
         self.input_size = phase * size ** 2
         self.output_size = size ** 2
-        self.layer_size = [self.input_size, 81]
+        self.layer_size = [self.input_size, 600, 300]
         self.num_hidden_layer = len(self.layer_size) - 1
         # learning rate
         self.eta = 0.1
@@ -44,12 +44,13 @@ class NeuralNetwork(object):
         out = self.get_output()
         if d:
             print 'pre prob ', out
-        characteristic = self.get_output()
-        t = np.where(action_gold!=0)[0][0]
-        characteristic[t] = action_gold[t]
+        #characteristic = self.get_output()
+        #t = np.where(action_gold!=0)[0][0]
+        #characteristic[t] = action_gold[t]
         if d:
             print 'char ', characteristic
-        characteristic = np.subtract(characteristic, out)
+        #characteristic = np.subtract(characteristic, out)
+        characteristic = np.subtract(action_gold, out)
         #out_error = characteristic * self.output_layer.get_d_non_linear_out()
         out_error = characteristic * self.output_layer.get_d_non_linear_out()
         if d:
